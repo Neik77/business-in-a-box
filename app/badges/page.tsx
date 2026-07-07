@@ -31,7 +31,7 @@ export default function Badges() {
     load()
   }, [])
 
-  const earned = (id) => badges.find(b => b.badge_id === id)
+  const earned = (id: string) => badges.find((b: any) => b.badge_id === id)
   const displayName = profile?.badge_name_pref === 'business' ? profile?.business_name : profile?.owner_name
 
   return (
