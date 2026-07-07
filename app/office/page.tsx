@@ -61,7 +61,12 @@ export default function Office() {
   const save = async (updated) => {
     if (!user) return
     setSaving(true)
-    await supabase.from('ceo_office').upsert({user_id:user.id, ...updated, updated_at: new Date().toISOString()}, {onConflict:'user_id'})
+    const existing = await supabase.from('ceo_office').select('id').eq('user_id', user.id).single()
+    if (existing.data) {
+      await supabase.from('ceo_office').update({...updated, updated_at: new Date().toISOString()}).eq('user_id', user.id)
+    } else {
+      await supabase.from('ceo_office').insert({user_id:user.id, ...updated, updated_at: new Date().toISOString()})
+    }
     setSaving(false)
   }
 
