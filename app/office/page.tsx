@@ -108,7 +108,7 @@ Question: ${question}`
     setBusy(false)
   }
 
-  const s = {
+  const s: any = {
     input:{width:'100%',background:'rgba(0,0,0,0.4)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:9,color:'#F4F1E8',padding:'11px 13px',fontSize:14,outline:'none',boxSizing:'border-box',marginBottom:14},
     label:{display:'block',color:'#9B968A',fontSize:11,letterSpacing:'.1em',textTransform:'uppercase',marginBottom:6},
   }
