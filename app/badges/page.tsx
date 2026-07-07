@@ -14,8 +14,8 @@ const BADGE_DEFS = [
 ]
 
 export default function Badges() {
-  const [profile, setProfile] = useState(null)
-  const [badges, setBadges] = useState([])
+  const [profile, setProfile] = useState<any>(null)
+  const [badges, setBadges] = useState<any[]>([])
   const router = useRouter()
   const supabase = createClient()
 
