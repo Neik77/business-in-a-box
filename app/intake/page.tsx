@@ -4,10 +4,10 @@ import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function Intake() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<any>(null)
   const [form, setForm] = useState({ownerName:'',businessName:'',email:'',phone:'',cityState:'',businessType:'',businessStage:'',description:'',productsServices:'',idealCustomer:'',biggestChallenge:'',ninetyDayGoal:'',hasLLC:'',hasEIN:'',hasBankAccount:'',tracksMoney:'',badgeNamePref:'owner'})
-  const [saving, setSaving] = useState(false)
-  const [done, setDone] = useState(false)
+  const [saving, setSaving] = useState<boolean>(false)
+  const [done, setDone] = useState<boolean>(false)
   const router = useRouter()
   const supabase = createClient()
 

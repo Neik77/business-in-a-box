@@ -24,14 +24,14 @@ const EMPTY_OFFICE = {
 }
 
 export default function Office() {
-  const [user, setUser] = useState(null)
-  const [profile, setProfile] = useState(null)
+  const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
   const [office, setOffice] = useState(EMPTY_OFFICE)
-  const [openTool, setOpenTool] = useState(null)
-  const [saving, setSaving] = useState(false)
-  const [q, setQ] = useState('')
-  const [msgs, setMsgs] = useState([])
-  const [busy, setBusy] = useState(false)
+  const [openTool, setOpenTool] = useState<any>(null)
+  const [saving, setSaving] = useState<boolean>(false)
+  const [q, setQ] = useState<string>('')
+  const [msgs, setMsgs] = useState<any[]>([])
+  const [busy, setBusy] = useState<boolean>(false)
   const [journalEntry, setJournalEntry] = useState({decision:'',why:''})
   const router = useRouter()
   const supabase = createClient()
