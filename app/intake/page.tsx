@@ -28,6 +28,23 @@ export default function Intake() {
     setSaving(true)
     await supabase.from('profiles').upsert({id:user.id, owner_name:form.ownerName, business_name:form.businessName, email:form.email, phone:form.phone, city_state:form.cityState, business_type:form.businessType, business_stage:form.businessStage, description:form.description, products_services:form.productsServices, ideal_customer:form.idealCustomer, biggest_challenge:form.biggestChallenge, ninety_day_goal:form.ninetyDayGoal, has_llc:form.hasLLC, has_ein:form.hasEIN, has_bank_account:form.hasBankAccount, tracks_money:form.tracksMoney, badge_name_pref:form.badgeNamePref, intake_done:true})
     setSaving(false)
+    // Send email notification to coach
+    try {
+      await fetch('/api/notify-intake', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          ownerName: form.ownerName,
+          businessName: form.businessName,
+          email: form.email,
+          businessType: form.businessType,
+          businessStage: form.businessStage,
+          description: form.description,
+          biggestChallenge: form.biggestChallenge,
+          ninetyDayGoal: form.ninetyDayGoal,
+        })
+      })
+    } catch(e) { /* silent fail - don't block the user */ }
     router.push('/dashboard')
   }
 
