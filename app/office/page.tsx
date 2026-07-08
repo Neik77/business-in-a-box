@@ -99,13 +99,13 @@ Description: ${profile?.description}
 Vision: ${office.vision.oneYear || 'not written'}
 Offer: ${office.offer.name || 'not built'} ${office.offer.price ? '@ '+office.offer.price : ''}
 Question: ${question}`
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:context}]})
+      const res = await fetch('/api/coach', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ context })
       })
       const data = await res.json()
-      const text = (data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('') || 'Ask me again, CEO.'
+      const text = data.text || 'Ask me again, CEO.'
       setMsgs(m => [...m, {role:'coach',text}])
     } catch(e) {
       setMsgs(m => [...m, {role:'coach',text:'Connection dropped. Ask me again.'}])
