@@ -99,7 +99,7 @@ Description: ${profile?.description}
 Vision: ${office.vision.oneYear || 'not written'}
 Offer: ${office.offer.name || 'not built'} ${office.offer.price ? '@ '+office.offer.price : ''}
 Question: ${question}`
-      const res = await fetch('/api/coach', {
+      const res = await fetch('/.netlify/functions/coach', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ context })
