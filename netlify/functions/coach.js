@@ -1,6 +1,4 @@
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
-
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -24,7 +22,7 @@ exports.handler = async (event, context) => {
       return { statusCode: 200, headers, body: JSON.stringify({ text: 'API key not configured' }) }
     }
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await globalThis.fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
