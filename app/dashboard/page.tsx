@@ -29,7 +29,7 @@ export default function Dashboard() {
 
   if (loading) return (
     <div style={{minHeight:'100vh',background:'#0A0A0C',display:'flex',alignItems:'center',justifyContent:'center'}}>
-      <div style={{color:'#D4AF37',fontFamily:'Georgia,serif',fontSize:18}}>Loading your headquarters...</div>
+      <div style={{color:'#D4AF37',fontFamily:'Georgia,serif',fontSize:18}} role="status">Loading your headquarters…</div>
     </div>
   )
 
@@ -41,9 +41,9 @@ export default function Dashboard() {
   ]
 
   return (
-    <div style={{minHeight:'100vh',background:'#0A0A0C',color:'#F4F1E8',fontFamily:'sans-serif',padding:'40px 24px'}}>
+    <div className="page-outer">
       <div style={{maxWidth:800,margin:'0 auto'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:40}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:40,flexWrap:'wrap',gap:16}}>
           <div>
             <div style={{fontSize:11,letterSpacing:'.34em',color:'#D4AF37',textTransform:'uppercase',marginBottom:8,border:'1px solid rgba(212,175,55,0.3)',display:'inline-block',padding:'6px 14px',borderRadius:4}}>HOME DASHBOARD</div>
             <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'8px 0 4px'}}>
@@ -53,19 +53,23 @@ export default function Dashboard() {
             {profile?.business_stage && <p style={{color:'#9B968A',margin:0,fontSize:13}}>Stage: {profile.business_stage}</p>}
           </div>
           <div style={{display:'flex',gap:10}}>
-            <button onClick={()=>router.push('/intake')} style={{background:'none',border:'1px solid rgba(212,175,55,0.4)',color:'#D4AF37',borderRadius:8,padding:'8px 16px',cursor:'pointer',fontSize:13}}>Edit Intake</button>
-            <button onClick={signOut} style={{background:'none',border:'1px solid rgba(255,255,255,0.1)',color:'#9B968A',borderRadius:8,padding:'8px 16px',cursor:'pointer',fontSize:13}}>Sign Out</button>
+            <button onClick={() => router.push('/intake')} className="btn btn-gold-outline">Edit Intake</button>
+            <button onClick={signOut} className="btn btn-ghost">Sign Out</button>
           </div>
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:18}}>
           {rooms.map(r => (
-            <div key={r.path} onClick={()=>router.push(r.path)}
-              style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:16,padding:'24px',cursor:'pointer',transition:'all .2s'}}>
-              <div style={{fontSize:28,marginBottom:12}}>{r.icon}</div>
+            <button
+              key={r.path}
+              onClick={() => router.push(r.path)}
+              className={`card-room${r.path === '/office' ? ' card-room-primary' : ''}${r.path === '/locked' ? ' card-room-locked' : ''}`}
+              aria-label={`${r.title} — ${r.desc}`}
+            >
+              <div style={{fontSize:28,marginBottom:12}} aria-hidden="true">{r.icon}</div>
               <h3 style={{fontFamily:'Georgia,serif',margin:'0 0 6px',fontSize:18}}>{r.title}</h3>
               <p style={{color:'#9B968A',fontSize:13,margin:0}}>{r.desc}</p>
-            </div>
+            </button>
           ))}
         </div>
 
@@ -73,8 +77,11 @@ export default function Dashboard() {
           <div style={{background:'rgba(212,175,55,0.08)',border:'1px solid rgba(212,175,55,0.3)',borderRadius:16,padding:'32px',textAlign:'center',marginTop:24}}>
             <h2 style={{fontFamily:'Georgia,serif',color:'#D4AF37',margin:'0 0 8px'}}>Complete your Business Intake</h2>
             <p style={{color:'#9B968A',marginBottom:24}}>Your headquarters needs your business info to personalize.</p>
-            <button onClick={()=>router.push('/intake')}
-              style={{background:'linear-gradient(120deg,#F5E7A3,#D4AF37 50%,#b8952f)',border:'none',borderRadius:10,color:'#171204',fontWeight:700,fontSize:14,padding:'14px 28px',cursor:'pointer'}}>
+            <button
+              onClick={() => router.push('/intake')}
+              className="btn btn-gold"
+              style={{fontSize:14,padding:'14px 28px'}}
+            >
               File My Business Intake
             </button>
           </div>

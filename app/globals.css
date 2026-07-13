@@ -1,26 +1,282 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --bg: #0A0A0C;
+  --surface: rgba(255,255,255,0.03);
+  --surface-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.08);
+  --border-gold: rgba(212,175,55,0.3);
+  --gold: #D4AF37;
+  --gold-dim: rgba(212,175,55,0.15);
+  --ink: #F4F1E8;
+  --muted: #9B968A;
+  --muted-light: #DAD6CB;
+  --error: #E94560;
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Focus ─── */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-ghost {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.2);
+}
+.btn-gold-outline {
+  background: none;
+  border: 1px solid rgba(212,175,55,0.4);
+  color: var(--gold);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+.btn-gold-outline:hover:not(:disabled) {
+  background: rgba(212,175,55,0.1);
+}
+.btn-gold {
+  background: linear-gradient(120deg,#F5E7A3,#D4AF37 50%,#b8952f);
+  border: none;
+  color: #171204;
+  font-weight: 700;
+  border-radius: 10px;
+  transition: opacity 0.15s;
+}
+.btn-gold:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+/* ─── Room cards (dashboard) ─── */
+.card-room {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: left;
+  width: 100%;
+  color: var(--ink);
+  font-family: inherit;
+}
+.card-room:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255,255,255,0.14);
+}
+.card-room-primary {
+  background: rgba(212,175,55,0.06);
+  border-color: rgba(212,175,55,0.25);
+}
+.card-room-primary:hover {
+  background: rgba(212,175,55,0.11);
+  border-color: rgba(212,175,55,0.45);
+}
+.card-room-locked {
+  border-style: dashed;
+  opacity: 0.65;
+}
+.card-room-locked:hover {
+  background: var(--surface);
+  opacity: 0.85;
+}
+
+/* ─── Form fields ─── */
+.field-input {
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 9px;
+  color: var(--ink);
+  padding: 11px 13px;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+.field-input:focus {
+  border-color: rgba(212,175,55,0.5);
+}
+.field-input::placeholder {
+  color: rgba(244,241,232,0.5);
+}
+.field-label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* ─── Login tabs ─── */
+.login-tab {
+  flex: 1;
+  padding: 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  min-height: 44px;
+}
+.login-tab[aria-selected="true"] {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+.login-tab[aria-selected="false"] {
+  background: none;
+  color: var(--muted);
+}
+.login-tab:hover[aria-selected="false"] {
+  background: rgba(255,255,255,0.05);
+}
+
+/* ─── Tool accordion row (office) ─── */
+.tool-row {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--ink);
+  font-family: inherit;
+  transition: background 0.1s;
+  min-height: 44px;
+}
+.tool-row:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+/* ─── Client list items (coach) ─── */
+.client-card-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  color: var(--ink);
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.client-card-btn:hover {
+  background: rgba(255,255,255,0.05);
+}
+.client-card-btn[aria-pressed="true"] {
+  border-color: var(--gold);
+}
+
+/* ─── Touch targets ─── */
+.btn-ghost,
+.btn-gold-outline {
+  min-height: 44px;
+}
+
+/* ─── Page wrapper ─── */
+.page-outer {
+  min-height: 100vh;
+  padding: 40px 24px;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
+}
+@media (max-width: 640px) {
+  .page-outer {
+    padding: 24px 16px;
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ─── Responsive coach grid ─── */
+.coach-grid {
+  display: grid;
+  gap: 24px;
+}
+@media (max-width: 767px) {
+  /* !important needed to override inline gridTemplateColumns driven by JS state */
+  .coach-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ─── 2-column detail grids ─── */
+.detail-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 500px) {
+  .detail-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Tool row description (hide on mobile to prevent overflow) ─── */
+.tool-row-desc {
+  color: var(--muted);
+  font-size: 13px;
+  margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+  flex-shrink: 1;
+}
+@media (max-width: 600px) {
+  .tool-row-desc {
+    display: none;
+  }
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

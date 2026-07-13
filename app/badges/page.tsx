@@ -16,6 +16,7 @@ const BADGE_DEFS = [
 export default function Badges() {
   const [profile, setProfile] = useState<any>(null)
   const [badges, setBadges] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
 
@@ -27,6 +28,7 @@ export default function Badges() {
       const { data: b } = await supabase.from('badges').select('*').eq('user_id', user.id)
       setProfile(p)
       setBadges(b || [])
+      setLoading(false)
     }
     load()
   }, [])
@@ -34,18 +36,40 @@ export default function Badges() {
   const earned = (id: string) => badges.find((b: any) => b.badge_id === id)
   const displayName = profile?.badge_name_pref === 'business' ? profile?.business_name : profile?.owner_name
 
+  if (loading) return (
+    <div style={{minHeight:'100vh',background:'#0A0A0C',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <div style={{color:'#D4AF37',fontFamily:'Georgia,serif',fontSize:18}} role="status">Loading your badges…</div>
+    </div>
+  )
+
+  const earnedCount = BADGE_DEFS.filter(b => earned(b.id)).length
+
   return (
-    <div style={{minHeight:'100vh',background:'#0A0A0C',color:'#F4F1E8',fontFamily:'sans-serif',padding:'40px 24px'}}>
+    <div className="page-outer">
       <div style={{maxWidth:900,margin:'0 auto'}}>
-        <button onClick={()=>router.push('/dashboard')} style={{background:'none',border:'1px solid rgba(255,255,255,0.1)',color:'#9B968A',borderRadius:8,padding:'8px 16px',cursor:'pointer',fontSize:13,marginBottom:24}}>← Back to HQ</button>
-        <div style={{fontSize:11,letterSpacing:'.34em',color:'#D4AF37',textTransform:'uppercase',marginBottom:12,border:'1px solid rgba(212,175,55,0.3)',display:'inline-block',padding:'6px 14px',borderRadius:4}}>BADGE WALL</div>
-        <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'8px 0 24px'}}>The Wall of <span style={{color:'#D4AF37'}}>Proof</span></h1>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:16}}>
+        <button onClick={() => router.push('/dashboard')} className="btn btn-ghost" style={{marginBottom:24}}>← Back to HQ</button>
+        <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'0 0 8px'}}>The Wall of <span style={{color:'#D4AF37'}}>Proof</span></h1>
+        <p style={{color:'#9B968A',marginBottom:24,fontSize:14}}>
+          {earnedCount === 0
+            ? 'No badges yet — they are earned, not given.'
+            : `${earnedCount} of ${BADGE_DEFS.length} badges earned.`}
+        </p>
+
+        <div
+          role="list"
+          aria-label="Badge collection"
+          style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:16}}
+        >
           {BADGE_DEFS.map(b => {
             const e = earned(b.id)
             return (
-              <div key={b.id} style={{background:e?'rgba(212,175,55,0.1)':'rgba(255,255,255,0.02)',border:e?'1px solid rgba(212,175,55,0.5)':'1px solid rgba(255,255,255,0.08)',borderRadius:16,padding:'24px',textAlign:'center',opacity:e?1:0.6}}>
-                <div style={{fontSize:32,marginBottom:12}}>{e?'🏆':'🔒'}</div>
+              <div
+                key={b.id}
+                role="listitem"
+                aria-label={e ? `${b.title} — earned by ${displayName} on ${e.earned_at}` : `${b.title} — locked. ${b.hint}`}
+                style={{background:e?'rgba(212,175,55,0.1)':'rgba(255,255,255,0.02)',border:e?'1px solid rgba(212,175,55,0.5)':'1px solid rgba(255,255,255,0.08)',borderRadius:16,padding:'24px',textAlign:'center',opacity:e?1:0.6}}
+              >
+                <div style={{fontSize:32,marginBottom:12}} aria-hidden="true">{e ? '🏆' : '🔒'}</div>
                 <div style={{fontFamily:'Georgia,serif',fontSize:16,fontWeight:600,marginBottom:8}}>{b.title}</div>
                 {e ? (
                   <>
@@ -54,7 +78,7 @@ export default function Badges() {
                     <div style={{color:'#9B968A',fontSize:10,marginTop:8,borderTop:'1px solid rgba(212,175,55,0.2)',paddingTop:8}}>Coach Neik™ · AI Legacy Lounge™</div>
                   </>
                 ) : (
-                  <div style={{color:'#9B968A',fontSize:12}}>{b.hint}</div>
+                  <div style={{color:'#9B968A',fontSize:12}} aria-hidden="true">{b.hint}</div>
                 )}
               </div>
             )

@@ -4,11 +4,10 @@ import { useRouter } from 'next/navigation'
 export default function Resources() {
   const router = useRouter()
   return (
-    <div style={{minHeight:'100vh',background:'#0A0A0C',color:'#F4F1E8',fontFamily:'sans-serif',padding:'40px 24px'}}>
+    <div className="page-outer">
       <div style={{maxWidth:800,margin:'0 auto'}}>
-        <button onClick={()=>router.push('/dashboard')} style={{background:'none',border:'1px solid rgba(255,255,255,0.1)',color:'#9B968A',borderRadius:8,padding:'8px 16px',cursor:'pointer',fontSize:13,marginBottom:24}}>← Back to HQ</button>
-        <div style={{fontSize:11,letterSpacing:'.34em',color:'#D4AF37',textTransform:'uppercase',marginBottom:12,border:'1px solid rgba(212,175,55,0.3)',display:'inline-block',padding:'6px 14px',borderRadius:4}}>RESOURCE LIBRARY</div>
-        <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'8px 0 32px'}}>The <span style={{color:'#D4AF37'}}>Library</span></h1>
+        <button onClick={()=>router.push('/dashboard')} className="btn btn-ghost" style={{marginBottom:24}}>← Back to HQ</button>
+        <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'0 0 32px'}}>The <span style={{color:'#D4AF37'}}>Library</span></h1>
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:18}}>
           {[
             {t:'AI Legacy Lounge™ Community',d:'Coaching, classes, and a room full of builders like you.',url:'https://www.skool.com/legacy-lounge-lab/about',cta:'Join the Lounge'},
