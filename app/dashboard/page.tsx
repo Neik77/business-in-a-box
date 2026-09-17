@@ -60,7 +60,7 @@ export default function Dashboard() {
     { title:'Badge Wall', desc:'Your earned proof of progress.', path:'/badges', icon:'🏆', key:'badges', v:'V1', unlocked: true },
     { title:'Resource Library', desc:'Tools, links, and community.', path:'/resources', icon:'📚', key:'resources', v:'V1', unlocked: true },
     { title:'CFO Money Room', desc:'Income, expenses, pricing, and profit.', path:'/locked', icon:'💰', key:'cfo_money', v:'V2', unlocked: false },
-    { title:'Marketing Studio', desc:'Brand message, content, and promotions.', path:'/locked', icon:'📣', key:'marketing', v:'V3', unlocked: false },
+    { title:'Marketing Studio', desc:'Brand message, content, and promotions.', path:'/marketing', icon:'📣', key:'marketing', v:'V3', unlocked: true },
     { title:'Sales Room', desc:'Leads, scripts, and revenue tracking.', path:'/locked', icon:'🎯', key:'sales', v:'V4', unlocked: false },
     { title:'Operations Center', desc:'SOPs, workflows, and client systems.', path:'/locked', icon:'⚙️', key:'operations', v:'V5', unlocked: false },
     { title:'Legal & Setup Room', desc:'LLC, EIN, contracts, and compliance.', path:'/locked', icon:'⚖️', key:'legal', v:'V6', unlocked: false },
