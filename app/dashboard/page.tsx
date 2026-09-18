@@ -60,7 +60,7 @@ export default function Dashboard() {
     { title:'Resource Library', desc:'Tools, links, and community.', path:'/resources', key:'resources', v:'V1', unlocked: true },
     { title:'CFO Money Room', desc:'Income, expenses, pricing, and profit.', path:'/cfo', key:'cfo_money', v:'V2', unlocked: true },
     { title:'Marketing Studio', desc:'Brand message, content, and promotions.', path:'/marketing', key:'marketing', v:'V3', unlocked: true },
-    { title:'Sales Room', desc:'Leads, scripts, and revenue tracking.', path:'/locked', key:'sales', v:'V4', unlocked: false },
+    { title:'Sales Room', desc:'Leads, scripts, and revenue tracking.', path:'/sales', key:'sales', v:'V4', unlocked: true },
     { title:'Operations Center', desc:'SOPs, workflows, and client systems.', path:'/locked', key:'operations', v:'V5', unlocked: false },
     { title:'Legal & Setup Room', desc:'LLC, EIN, contracts, and compliance.', path:'/locked', key:'legal', v:'V6', unlocked: false },
     { title:'Funding Department', desc:'Business credit, loans, and grants.', path:'/locked', key:'funding', v:'V7', unlocked: false },
