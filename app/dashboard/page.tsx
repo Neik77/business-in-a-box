@@ -46,8 +46,11 @@ export default function Dashboard() {
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:40,flexWrap:'wrap',gap:16}}>
           <div>
             <div style={{fontSize:11,letterSpacing:'.34em',color:'#D4AF37',textTransform:'uppercase',marginBottom:8,border:'1px solid rgba(212,175,55,0.3)',display:'inline-block',padding:'6px 14px',borderRadius:4}}>HOME DASHBOARD</div>
-            <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'8px 0 4px'}}>
-              Welcome to <span style={{color:'#D4AF37'}}>{profile?.business_name || 'Your'}</span> Headquarters
+            <h1 style={{fontFamily:'Georgia,serif',fontSize:32,margin:'8px 0 4px',display:'flex',alignItems:'center',gap:14}}>
+              {profile?.logo_url && (
+                <img src={profile.logo_url} alt={`${profile.business_name || 'Business'} logo`} style={{width:44,height:44,borderRadius:8,objectFit:'cover',border:'1px solid rgba(212,175,55,0.3)'}} />
+              )}
+              <span>Welcome to <span style={{color:'#D4AF37'}}>{profile?.business_name || 'Your'}</span> Headquarters</span>
             </h1>
             <p style={{color:'#9B968A',margin:'0 0 4px'}}>Owner: {profile?.owner_name || user?.email}</p>
             {profile?.business_stage && <p style={{color:'#9B968A',margin:0,fontSize:13}}>Stage: {profile.business_stage}</p>}

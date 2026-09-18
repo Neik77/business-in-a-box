@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SD Black Friday Campaign Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:   #0e0e0e;
+    --dark:    #161616;
+    --card:    #1e1e1e;
+    --card2:   #252525;
+    --border:  rgba(255,255,255,0.08);
+    --gold:    #C9A84C;
+    --gold-lt: #E8C97A;
+    --gold-dk: #8B6914;
+    --gold-bg: rgba(201,168,76,0.12);
+    --gold-bd: rgba(201,168,76,0.28);
+    --white:   #ffffff;
+    --muted:   rgba(255,255,255,0.42);
+    --subtle:  rgba(255,255,255,0.1);
+    --ff-h: 'Playfair Display', serif;
+    --ff-b: 'DM Sans', sans-serif;
+    --ff-m: 'Space Mono', monospace;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--ff-b);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── PAGE SHELL ── */
+  .page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── SD WATERMARK ── */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px;
+    height: 520px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.11;
+  }
+
+  .watermark svg { width: 100%; height: 100%; }
+
+  /* ── HEADER ── */
+  .hdr {
+    position: relative;
+    z-index: 1;
+    padding: 30px 36px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hdr-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .logo-mark {
+    font-family: var(--ff-h);
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .hdr-brand-eye {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 3px;
+  }
+
+  .hdr-brand-title {
+    font-family: var(--ff-h);
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .hdr-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-row {
+    display: flex;
+    gap: 5px;
+    margin-top: 18px;
+  }
+
+  .pip {
+    flex: 1;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--subtle);
+    transition: background 0.4s;
+  }
+  .pip.done   { background: var(--gold); }
+  .pip.active { background: var(--gold-lt); }
+
+  /* ── BODY ── */
+  .body {
+    position: relative;
+    z-index: 1;
+    padding: 30px 36px;
+  }
+
+  /* ── STEPS ── */
+  .step { display: none; }
+  .step.active { display: block; animation: fadeUp 0.3s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-eye {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .step-h {
+    font-family: var(--ff-h);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--white);
+    margin-bottom: 5px;
+    line-height: 1.25;
+  }
+
+  .step-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.65;
+  }
+
+  /* ── FIELDS ── */
+  .fg { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 7px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-family: var(--ff-b);
+    font-size: 13.5px;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold-bd);
+    background: rgba(201,168,76,0.04);
+  }
+
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
+  select option { background: #1e1e1e; color: #fff; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── CHIPS ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    font-family: var(--ff-b);
+    user-select: none;
+  }
+
+  .chip:hover { border-color: var(--gold-bd); color: var(--white); }
+
+  .chip.on {
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    color: var(--gold-lt);
+    font-weight: 500;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-gold {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--gold);
+    color: #111;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--ff-b);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 10px;
+    letter-spacing: 0.2px;
+  }
+  .btn-gold:hover:not(:disabled) { background: var(--gold-lt); transform: translateY(-1px); }
+  .btn-gold:active:not(:disabled) { transform: none; }
+  .btn-gold:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: var(--ff-b);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+  .btn-row { display: flex; gap: 10px; align-items: center; }
+  .btn-row .btn-gold { margin-top: 0; }
+
+  /* ── DIVIDER ── */
+  .div { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+  /* ── CONFIRM CHIPS ── */
+  .confirm-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .c-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .c-chip b { color: var(--white); }
+
+  /* ── RESEARCH PHASE ── */
+  .research-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+
+  .research-num {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .research-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .research-prompt {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--gold);
+    border-radius: 6px;
+    padding: 10px 13px;
+    font-family: var(--ff-m);
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+    margin-top: 8px;
+    position: relative;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: var(--gold-bg);
+    border: 1px solid var(--gold-bd);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: 9px;
+    font-family: var(--ff-m);
+    color: var(--gold);
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: rgba(201,168,76,0.25); }
+  .copy-btn.copied { color: #7ec87e; border-color: rgba(126,200,126,0.3); background: rgba(126,200,126,0.08); }
+
+  /* ── LOADING ── */
+  .loading {
+    display: none;
+    padding: 60px 0;
+    text-align: center;
+  }
+
+  .ring {
+    width: 48px;
+    height: 48px;
+    border: 2.5px solid rgba(201,168,76,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .load-eye {
+    font-family: var(--ff-m);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .load-status {
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 18px;
+    transition: opacity 0.3s;
+  }
+
+  /* ── OUTPUT ── */
+  .output { display: none; }
+
+  .out-header {
+    margin-bottom: 20px;
+  }
+
+  .out-eye {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 5px;
+  }
+
+  .out-title {
+    font-family: var(--ff-h);
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--white);
+  }
+
+  /* ── DAY CARDS ── */
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .day-card:hover { border-left-color: var(--gold-lt); }
+
+  .day-num {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .day-role {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .day-purpose {
+    font-size: 11px;
+    color: rgba(255,255,255,0.32);
+    font-style: italic;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .day-field {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.58);
+    line-height: 1.65;
+    margin-bottom: 5px;
+  }
+
+  .day-field strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+  .day-hook {
+    margin-top: 11px;
+    padding: 11px 15px;
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--gold-lt);
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  .day-hook::before { content: '"'; }
+  .day-hook::after  { content: '"'; }
+
+  /* ── STRATEGY BLOCK ── */
+  .strategy-block {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.16);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 18px;
+  }
+
+  .strategy-block h4 {
+    font-family: var(--ff-h);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold-lt);
+    margin-bottom: 12px;
+  }
+
+  .strategy-block p {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* ── ERROR ── */
+  .err {
+    background: rgba(220,60,60,0.08);
+    border: 1px solid rgba(220,60,60,0.22);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.65);
+    display: none;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── RESTART ── */
+  .restart-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--ff-b);
+    font-size: 12.5px;
+    cursor: pointer;
+    margin-top: 22px;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+  /* ── FALLBACK ── */
+  .fallback { font-size: 13px; color: var(--muted); line-height: 1.8; white-space: pre-wrap; word-wrap: break-word; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 520px) {
+    .body, .hdr { padding-left: 20px; padding-right: 20px; }
+    .row2 { grid-template-columns: 1fr; }
+    .watermark { width: 340px; height: 340px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="card">
+
+    <!-- WATERMARK -->
+    <div class="watermark" aria-hidden="true">
+      <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gD" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#5a4010" />
+            <stop offset="35%"  stop-color="#C9A84C" />
+            <stop offset="55%"  stop-color="#E8C97A" />
+            <stop offset="100%" stop-color="#5a4010" />
+          </linearGradient>
+          <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#3d3520" />
+            <stop offset="40%"  stop-color="#E8C97A" />
+            <stop offset="60%"  stop-color="#C9A84C" />
+            <stop offset="100%" stop-color="#3d3520" />
+          </linearGradient>
+        </defs>
+        <text x="230" y="295" font-family="Playfair Display, serif" font-weight="900"
+              font-size="320" fill="url(#gD)" text-anchor="middle">D</text>
+        <text x="162" y="280" font-family="Playfair Display, serif" font-weight="900"
+              font-size="268" fill="url(#gS)" text-anchor="middle">S</text>
+      </svg>
+    </div>
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-top">
+        <div class="logo-mark">SD</div>
+        <div>
+          <div class="hdr-brand-eye">Campaign Builder</div>
+          <div class="hdr-brand-title">Black Friday Edition</div>
+        </div>
+      </div>
+      <div class="hdr-sub">Research first. Plan backward. Every post earns its place.</div>
+      <div class="progress-row" id="pips">
+        <div class="pip" id="p0"></div>
+        <div class="pip" id="p1"></div>
+        <div class="pip" id="p2"></div>
+        <div class="pip" id="p3"></div>
+        <div class="pip" id="p4"></div>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="body">
+
+      <!-- STEP 0: RESEARCH -->
+      <div class="step" id="s0">
+        <div class="step-eye">Step 1 of 5 &mdash; Research Phase</div>
+        <div class="step-h">Find what your audience is already searching for</div>
+        <div class="step-desc">Before you build a single post, run these prompts in Claude or ChatGPT. Your campaign is only as strong as your research. Copy each prompt, fill in your details, and save the results.</div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 01</div>
+          <div class="research-title">Find what your scattered message is costing you</div>
+          <div class="research-prompt">
+            Act as a research team. I am a [your profession] with expertise in [your area]. Help me understand what happens when my messaging is scattered, and give me 3 things I am losing right now by jumping between topics. Search Reddit and YouTube for posts where people say they do not follow a creator because they cannot figure out what that creator does. Show me the exact frustration they expressed.
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 02</div>
+          <div class="research-title">Find what your audience is searching for right now</div>
+          <div class="research-prompt">
+            Act as a research team. My audience is [describe your specific audience]. Help me find what they are searching for right now and give me 3 specific messages I could own. Search Google Trends and Reddit for the top 10 questions my audience is asking this month. Show me what they are desperate to know. Show me gaps where nobody is answering clearly.
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 03</div>
+          <div class="research-title">Find the language your audience actually uses</div>
+          <div class="research-prompt">
+            Act as a research team. My audience is [describe your audience]. Show me exactly how they talk about their problems and give me 3 specific phrases I can use in my content. Find 10 posts from creators my audience actually follows. What language do they use? What tone wins? Show me their real words.
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 04</div>
+          <div class="research-title">Find the gap nobody in your niche is filling</div>
+          <div class="research-prompt">
+            Act as a research team. My audience is [describe your audience]. Help me find what content gaps exist right now and give me 3 specific ideas based on what people are actually searching for. Search for topics with real search volume but poor answers. What are people asking that is not being answered well?
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+          </div>
+        </div>
+
+        <button class="btn-gold" onclick="go(1)">I've Done My Research &rarr; Build My Campaign</button>
+      </div>
+
+      <!-- STEP 1: AUDIENCE -->
+      <div class="step" id="s1">
+        <div class="step-eye">Step 2 of 5 &mdash; Your Audience</div>
+        <div class="step-h">Who is your business for?</div>
+        <div class="step-desc">Everything starts here. The clearer your person, the sharper every post will be.</div>
+
+        <div class="fg">
+          <label>Your niche or business type</label>
+          <input type="text" id="niche" placeholder="e.g. DTF crafting, AI content coaching, digital products..." />
+        </div>
+
+        <div class="fg">
+          <label>Who is your ideal customer?</label>
+          <input type="text" id="audience" placeholder="e.g. female entrepreneurs 40+, crafters who sell on Etsy..." />
+        </div>
+
+        <div class="fg">
+          <label>Their biggest struggle right now</label>
+          <div class="chips" id="painChips">
+            <div class="chip" data-v="not enough time">Not enough time</div>
+            <div class="chip" data-v="confused about where to start">Confused, don't know where to start</div>
+            <div class="chip" data-v="not making enough money">Not making enough money</div>
+            <div class="chip" data-v="content feels scattered">Content feels scattered</div>
+            <div class="chip" data-v="don't know what to sell">Don't know what to sell</div>
+            <div class="chip" data-v="creating but not converting">Creating but not converting</div>
+          </div>
+          <input type="text" id="pain" style="margin-top:10px" placeholder="Or type their specific struggle..." />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="go(0)">&larr; Back</button>
+          <button class="btn-gold" style="flex:1" onclick="go(2)">Next: Your Offer &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: OFFER -->
+      <div class="step" id="s2">
+        <div class="step-eye">Step 3 of 5 &mdash; Your Offer</div>
+        <div class="step-h">What are you selling?</div>
+        <div class="step-desc">Begin with the end in mind. Lock in the offer before anything else gets built. This is what every post in the campaign is building toward.</div>
+
+        <div class="fg">
+          <label>Your Black Friday offer</label>
+          <input type="text" id="offer" placeholder="e.g. DTF Design Bundle, Content Workshop Replay, Coaching Package..." />
+        </div>
+
+        <div class="row2">
+          <div class="fg">
+            <label>Price point</label>
+            <input type="text" id="price" placeholder="e.g. $97, $47..." />
+          </div>
+          <div class="fg">
+            <label>Delivery format</label>
+            <select id="format">
+              <option value="">Select...</option>
+              <option>Digital download</option>
+              <option>Replay / recording</option>
+              <option>Live workshop</option>
+              <option>Membership access</option>
+              <option>Physical product</option>
+              <option>Design files / templates</option>
+              <option>1:1 coaching</option>
+              <option>Course / program</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Transformation your offer delivers</label>
+          <textarea id="transformation" placeholder="Before: they struggle with X. After: they now have Y and feel Z..."></textarea>
+        </div>
+
+        <div class="fg">
+          <label>Main objection buyers will have</label>
+          <div class="chips" id="objChips">
+            <div class="chip" data-v="I don't have time">"I don't have time"</div>
+            <div class="chip" data-v="It's too expensive">"Too expensive"</div>
+            <div class="chip" data-v="I'm not sure it works">"Not sure it works"</div>
+            <div class="chip" data-v="I'll do it later">"I'll do it later"</div>
+            <div class="chip" data-v="I can figure it out myself">"I'll figure it out"</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="go(1)">&larr; Back</button>
+          <button class="btn-gold" style="flex:1" onclick="go(3)">Next: Campaign Setup &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: CAMPAIGN -->
+      <div class="step" id="s3">
+        <div class="step-eye">Step 4 of 5 &mdash; Campaign Setup</div>
+        <div class="step-h">Build the campaign backward</div>
+        <div class="step-desc">Your sale is the finish line. Every post before it is a stepping stone. Tell us how to lay them out.</div>
+
+        <div class="fg">
+          <label>Platforms you will post on</label>
+          <div class="chips" id="platChips">
+            <div class="chip" data-v="Facebook">Facebook</div>
+            <div class="chip" data-v="Instagram">Instagram</div>
+            <div class="chip" data-v="TikTok">TikTok</div>
+            <div class="chip" data-v="Skool">Skool</div>
+            <div class="chip" data-v="Email list">Email list</div>
+            <div class="chip" data-v="YouTube">YouTube</div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Content assets you already have</label>
+          <textarea id="assets" placeholder="e.g. AI-generated images, product mockups, design samples, live replay recordings..."></textarea>
+        </div>
+
+        <div class="fg">
+          <label>Brand tone</label>
+          <div class="chips" id="toneChips">
+            <div class="chip on" data-v="warm and real">Warm and real</div>
+            <div class="chip" data-v="bold and direct">Bold and direct</div>
+            <div class="chip" data-v="educational and nurturing">Educational</div>
+            <div class="chip" data-v="funny and relatable">Funny and relatable</div>
+            <div class="chip" data-v="faith-based and uplifting">Faith-based</div>
+            <div class="chip" data-v="professional and premium">Professional and premium</div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Discount or urgency element</label>
+          <input type="text" id="urgency" placeholder="e.g. 50% off for 48 hours, bonus for first 10 buyers, closes Nov 29..." />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="go(2)">&larr; Back</button>
+          <button class="btn-gold" style="flex:1" onclick="go(4)">Next: Review &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: CONFIRM -->
+      <div class="step" id="s4">
+        <div class="step-eye">Step 5 of 5 &mdash; Confirm and Build</div>
+        <div class="step-h">Everything looks good?</div>
+        <div class="step-desc">Review what we collected. Hit build and your full 7-day campaign gets created.</div>
+
+        <div class="confirm-grid" id="confirmGrid"></div>
+
+        <button class="btn-gold" id="buildBtn" onclick="buildCampaign()">&#9889; Build My 7-Day Campaign</button>
+        <button class="btn-ghost" onclick="go(3)">&larr; Back</button>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading" id="loading">
+        <div class="ring"></div>
+        <div class="load-eye">Building your campaign</div>
+        <div class="load-status" id="loadStatus">Analyzing your audience...</div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="output" id="output">
+        <div class="err" id="errBox"></div>
+        <div class="out-header">
+          <div class="out-eye">Your 7-Day Black Friday Campaign</div>
+          <div class="out-title" id="outTitle"></div>
+        </div>
+        <div id="outContent"></div>
+        <button class="restart-btn" onclick="restart()">&#8635; Build a new campaign</button>
+      </div>
+
+    </div><!-- /body -->
+  </div><!-- /card -->
+</div><!-- /page -->
+
+<script>
+  const D = {
+    niche:'', audience:'', pain:'', offer:'', price:'',
+    format:'', transformation:'', objection:'',
+    platforms:[], assets:'', tone:'warm and real', urgency:''
+  };
+
+  const loadMsgs = [
+    'Analyzing your audience pain points...',
+    'Mapping the sequence backward from sale day...',
+    'Assigning a strategic role to each day...',
+    'Writing scroll-stopping hooks...',
+    'Building caption direction for each post...',
+    'Crafting the objection support day...',
+    'Finalizing the purchase invitation...',
+    'Polishing campaign strategy notes...'
+  ];
+
+  function setPips(cur) {
+    for (let i = 0; i < 5; i++) {
+      const p = document.getElementById('p' + i);
+      p.className = 'pip' + (i < cur ? ' done' : i === cur ? ' active' : '');
+    }
+  }
+
+  function showOnly(id) {
+    ['s0','s1','s2','s3','s4','loading','output'].forEach(x => {
+      const el = document.getElementById(x);
+      if (!el) return;
+      el.style.display = 'none';
+      el.className = el.className.replace(' active', '').trim();
+    });
+    const t = document.getElementById(id);
+    if (!t) return;
+    t.style.display = 'block';
+    setTimeout(() => t.classList.add('active'), 10);
+  }
+
+  function go(n) {
+    if (n === 2) {
+      D.niche    = document.getElementById('niche').value.trim();
+      D.audience = document.getElementById('audience').value.trim();
+      if (!D.niche || !D.audience) { alert('Please fill in your niche and ideal customer.'); return; }
+      const pc = document.querySelector('#painChips .chip.on');
+      const pi = document.getElementById('pain').value.trim();
+      D.pain = pi || (pc ? pc.dataset.v : '');
+    }
+    if (n === 3) {
+      D.offer  = document.getElementById('offer').value.trim();
+      if (!D.offer) { alert('Please enter your Black Friday offer.'); return; }
+      D.price          = document.getElementById('price').value.trim();
+      D.format         = document.getElementById('format').value;
+      D.transformation = document.getElementById('transformation').value.trim();
+      const oc = document.querySelector('#objChips .chip.on');
+      D.objection = oc ? oc.dataset.v : '';
+    }
+    if (n === 4) {
+      D.platforms = [...document.querySelectorAll('#platChips .chip.on')].map(c => c.dataset.v);
+      D.assets    = document.getElementById('assets').value.trim();
+      const tc    = document.querySelector('#toneChips .chip.on');
+      D.tone      = tc ? tc.dataset.v : 'warm and real';
+      D.urgency   = document.getElementById('urgency').value.trim();
+      buildConfirm();
+    }
+    showOnly('s' + n);
+    setPips(n);
+  }
+
+  function buildConfirm() {
+    const pairs = [
+      ['Niche', D.niche], ['Audience', D.audience], ['Pain', D.pain],
+      ['Offer', D.offer], ['Price', D.price], ['Format', D.format],
+      ['Platforms', D.platforms.join(', ')], ['Tone', D.tone], ['Urgency', D.urgency]
+    ].filter(([,v]) => v);
+    document.getElementById('confirmGrid').innerHTML =
+      pairs.map(([k,v]) => `<div class="c-chip">${k}: <b>${v}</b></div>`).join('');
+    document.getElementById('outTitle').textContent = D.offer;
+  }
+
+  function wireChips(id, multi) {
+    document.querySelectorAll(`#${id} .chip`).forEach(c => {
+      c.addEventListener('click', function() {
+        if (multi) {
+          this.classList.toggle('on');
+        } else {
+          document.querySelectorAll(`#${id} .chip`).forEach(x => x.classList.remove('on'));
+          this.classList.add('on');
+          if (id === 'painChips') document.getElementById('pain').value = this.dataset.v;
+        }
+      });
+    });
+  }
+
+  wireChips('painChips', false);
+  wireChips('objChips',  false);
+  wireChips('platChips', true);
+  wireChips('toneChips', false);
+
+  function copyPrompt(btn) {
+    const text = btn.parentElement.textContent.replace('Copy','').replace('Copied','').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  async function buildCampaign() {
+    document.getElementById('buildBtn').disabled = true;
+    showOnly('loading');
+    setPips(5);
+
+    let mi = 0;
+    const ticker = setInterval(() => {
+      document.getElementById('loadStatus').textContent = loadMsgs[mi % loadMsgs.length];
+      mi++;
+    }, 1900);
+
+    const prompt = `You are a strategic Black Friday content campaign builder. Create a complete, rich 7-day campaign planned BACKWARD from the sale date.
+
+BUSINESS INFO:
+- Niche: ${D.niche}
+- Audience: ${D.audience}
+- Biggest pain point: ${D.pain || 'general overwhelm and uncertainty'}
+
+OFFER INFO:
+- Product/service: ${D.offer}
+- Price: ${D.price || 'not specified'}
+- Format: ${D.format || 'digital'}
+- Transformation delivered: ${D.transformation || 'not specified'}
+- Main objection: ${D.objection || 'not specified'}
+
+CAMPAIGN DETAILS:
+- Platforms: ${D.platforms.length ? D.platforms.join(', ') : 'Facebook and Instagram'}
+- Existing assets: ${D.assets || 'images, product photos, past content'}
+- Brand tone: ${D.tone}
+- Urgency/discount: ${D.urgency || 'Black Friday limited-time deal'}
+
+For EACH of the 7 days use this EXACT format — do not skip any field:
+
+DAY [N] - [STRATEGIC ROLE IN CAPS]
+Purpose: [one sentence on why this day sits here in the sequence]
+Content angle: [specific idea for what this post is about]
+Image idea: [specific visual to pull from their existing assets or create]
+Hook: [the exact opening line to stop the scroll — powerful, specific, no generic opener]
+Caption direction: [3-4 sentences on what to say, the emotional journey, how it should feel]
+CTA: [exact call to action for this day — NOT a purchase CTA until day 6-7]
+Platform tip: [one platform-specific note for their platforms]
+
+The 7 days MUST follow this sequence:
+Day 1: Problem Recognition — name the pain they live with
+Day 2: Audience Connection — make them feel seen and understood
+Day 3: Education — teach something useful, no sell
+Day 4: Belief Building — proof it is possible, story or example
+Day 5: Offer Introduction — introduce what you have, soft
+Day 6: Objection Support — handle the main objection head on
+Day 7: Purchase Invitation — urgency, clear ask, close
+
+After all 7 days, write exactly:
+
+CAMPAIGN STRATEGY NOTES
+Write 3 paragraphs:
+1. What makes THIS specific audience respond and why this sequence works for them
+2. The content gap this campaign fills that others in this niche are missing
+3. The one thing most creators skip before Black Friday that this campaign does not skip — and why it matters
+
+Tone is ${D.tone}. Write like a real strategist who knows this audience. Every day must earn its place. No filler. No corporate language. Make the hooks genuinely compelling.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      clearInterval(ticker);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      const text = data.content?.[0]?.text || '';
+      renderOutput(text);
+    } catch(e) {
+      clearInterval(ticker);
+      showOnly('output');
+      const eb = document.getElementById('errBox');
+      eb.style.display = 'block';
+      eb.innerHTML = `Something went wrong building your campaign. Please try again.<br><small style="opacity:0.5">${e.message}</small>`;
+      document.getElementById('outContent').innerHTML = '';
+      document.getElementById('buildBtn').disabled = false;
+    }
+  }
+
+  function renderOutput(text) {
+    showOnly('output');
+    document.getElementById('errBox').style.display = 'none';
+
+    const lines  = text.split('\n');
+    const days   = [];
+    let cur      = null;
+    let stratLines = [];
+    let inStrat  = false;
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line) continue;
+      if (/CAMPAIGN STRATEGY NOTES/i.test(line)) {
+        if (cur) { days.push(cur); cur = null; }
+        inStrat = true; continue;
+      }
+      if (inStrat) { stratLines.push(line); continue; }
+      const dm = line.match(/^DAY\s*(\d)\s*[-:]\s*(.+)/i);
+      if (dm) {
+        if (cur) days.push(cur);
+        cur = { day: dm[1], role: dm[2].trim(), fields: {} };
+      } else if (cur) {
+        const fm = line.match(/^(Purpose|Content angle|Image idea|Hook|Caption direction|CTA|Platform tip)[^:]*:\s*(.+)/i);
+        if (fm) cur.fields[fm[1].toLowerCase().replace(' ','-')] = fm[2];
+        else {
+          const last = Object.keys(cur.fields).pop();
+          if (last) cur.fields[last] += ' ' + line;
+        }
+      }
+    }
+    if (cur) days.push(cur);
+
+    let html = '';
+
+    if (days.length) {
+      html += days.map(b => {
+        const f = b.fields;
+        return `<div class="day-card">
+          <div class="day-num">Day ${b.day}</div>
+          <div class="day-role">${b.role}</div>
+          ${f['purpose'] ? `<div class="day-purpose">${f['purpose']}</div>` : ''}
+          ${f['content-angle'] ? `<div class="day-field"><strong>Content angle:</strong> ${f['content-angle']}</div>` : ''}
+          ${f['image-idea'] ? `<div class="day-field"><strong>Image idea:</strong> ${f['image-idea']}</div>` : ''}
+          ${f['caption-direction'] ? `<div class="day-field"><strong>Caption direction:</strong> ${f['caption-direction']}</div>` : ''}
+          ${f['cta'] ? `<div class="day-field"><strong>CTA:</strong> ${f['cta']}</div>` : ''}
+          ${f['platform-tip'] ? `<div class="day-field" style="font-size:11.5px;color:rgba(255,255,255,0.3)">&#9654; ${f['platform-tip']}</div>` : ''}
+          ${f['hook'] ? `<div class="day-hook">${f['hook']}</div>` : ''}
+        </div>`;
+      }).join('');
+    } else {
+      html += `<div class="day-card"><p class="fallback">${text}</p></div>`;
+    }
+
+    if (stratLines.length) {
+      html += `<div class="strategy-block">
+        <h4>Campaign Strategy Notes</h4>
+        <p>${stratLines.join('\n')}</p>
+      </div>`;
+    }
+
+    document.getElementById('outContent').innerHTML = html;
+  }
+
+  function restart() {
+    document.querySelectorAll('.chip').forEach(c => {
+      c.classList.remove('on');
+      if (c.closest('#toneChips') && c.dataset.v === 'warm and real') c.classList.add('on');
+    });
+    document.querySelectorAll('input[type="text"], textarea').forEach(f => f.value = '');
+    document.querySelectorAll('select').forEach(f => f.value = '');
+    Object.keys(D).forEach(k => D[k] = Array.isArray(D[k]) ? [] : '');
+    D.tone = 'warm and real';
+    document.getElementById('buildBtn').disabled = false;
+    document.getElementById('errBox').style.display = 'none';
+    showOnly('s0');
+    setPips(0);
+  }
+
+  showOnly('s0');
+  setPips(0);
+</script>
+</body>
+</html>

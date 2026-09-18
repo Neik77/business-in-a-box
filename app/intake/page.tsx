@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 
 export default function Intake() {
   const [user, setUser] = useState<any>(null)
-  const [form, setForm] = useState({ownerName:'',businessName:'',email:'',phone:'',cityState:'',businessType:'',businessStage:'',description:'',productsServices:'',idealCustomer:'',biggestChallenge:'',ninetyDayGoal:'',hasLLC:'',hasEIN:'',hasBankAccount:'',tracksMoney:'',badgeNamePref:'owner'})
+  const [form, setForm] = useState({ownerName:'',businessName:'',email:'',phone:'',cityState:'',businessType:'',businessStage:'',description:'',productsServices:'',idealCustomer:'',biggestChallenge:'',ninetyDayGoal:'',hasLLC:'',hasEIN:'',hasBankAccount:'',tracksMoney:'',badgeNamePref:'owner',logoUrl:''})
   const [saving, setSaving] = useState<boolean>(false)
+  const [uploadingLogo, setUploadingLogo] = useState<boolean>(false)
   const [validationError, setValidationError] = useState<string>('')
   const router = useRouter()
   const supabase = createClient()
@@ -17,12 +18,29 @@ export default function Intake() {
       if (!user) { router.push('/login'); return }
       setUser(user)
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-      if (data) setForm(f => ({...f, ownerName:data.owner_name||'', businessName:data.business_name||'', email:data.email||'', phone:data.phone||'', cityState:data.city_state||'', businessType:data.business_type||'', businessStage:data.business_stage||'', description:data.description||'', productsServices:data.products_services||'', idealCustomer:data.ideal_customer||'', biggestChallenge:data.biggest_challenge||'', ninetyDayGoal:data.ninety_day_goal||'', hasLLC:data.has_llc||'', hasEIN:data.has_ein||'', hasBankAccount:data.has_bank_account||'', tracksMoney:data.tracks_money||'', badgeNamePref:data.badge_name_pref||'owner'}))
+      if (data) setForm(f => ({...f, ownerName:data.owner_name||'', businessName:data.business_name||'', email:data.email||'', phone:data.phone||'', cityState:data.city_state||'', businessType:data.business_type||'', businessStage:data.business_stage||'', description:data.description||'', productsServices:data.products_services||'', idealCustomer:data.ideal_customer||'', biggestChallenge:data.biggest_challenge||'', ninetyDayGoal:data.ninety_day_goal||'', hasLLC:data.has_llc||'', hasEIN:data.has_ein||'', hasBankAccount:data.has_bank_account||'', tracksMoney:data.tracks_money||'', badgeNamePref:data.badge_name_pref||'owner', logoUrl:data.logo_url||''}))
     }
     load()
   }, [])
 
   const set = (k: string, v: string) => setForm(f => ({...f, [k]:v}))
+
+  const uploadLogo = async (file: File) => {
+    if (!user) return
+    setValidationError('')
+    setUploadingLogo(true)
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `${user.id}.${ext}`
+      const { error: uploadError } = await supabase.storage.from('logos').upload(path, file, { upsert: true, cacheControl: '3600' })
+      if (uploadError) throw uploadError
+      const { data } = supabase.storage.from('logos').getPublicUrl(path)
+      set('logoUrl', data.publicUrl)
+    } catch {
+      setValidationError('Failed to upload logo. Please try again.')
+    }
+    setUploadingLogo(false)
+  }
 
   const save = async () => {
     setValidationError('')
@@ -35,7 +53,7 @@ export default function Intake() {
 
     setSaving(true)
     try {
-      await supabase.from('profiles').upsert({id:user.id, owner_name:form.ownerName, business_name:form.businessName, email:form.email, phone:form.phone, city_state:form.cityState, business_type:form.businessType, business_stage:form.businessStage, description:form.description, products_services:form.productsServices, ideal_customer:form.idealCustomer, biggest_challenge:form.biggestChallenge, ninety_day_goal:form.ninetyDayGoal, has_llc:form.hasLLC, has_ein:form.hasEIN, has_bank_account:form.hasBankAccount, tracks_money:form.tracksMoney, badge_name_pref:form.badgeNamePref, intake_done:true})
+      await supabase.from('profiles').upsert({id:user.id, owner_name:form.ownerName, business_name:form.businessName, email:form.email, phone:form.phone, city_state:form.cityState, business_type:form.businessType, business_stage:form.businessStage, description:form.description, products_services:form.productsServices, ideal_customer:form.idealCustomer, biggest_challenge:form.biggestChallenge, ninety_day_goal:form.ninetyDayGoal, has_llc:form.hasLLC, has_ein:form.hasEIN, has_bank_account:form.hasBankAccount, tracks_money:form.tracksMoney, badge_name_pref:form.badgeNamePref, logo_url:form.logoUrl||null, intake_done:true})
     } catch {
       setValidationError('Failed to save. Please try again.')
       setSaving(false)
@@ -72,6 +90,21 @@ export default function Intake() {
           <input id="in-phone" className="field-input" value={form.phone} onChange={e=>set('phone',e.target.value)} placeholder="(___) ___-____" type="tel" />
           <label htmlFor="in-city" className="field-label">City &amp; State</label>
           <input id="in-city" className="field-input" value={form.cityState} onChange={e=>set('cityState',e.target.value)} placeholder="City, ST" maxLength={80} />
+          <label htmlFor="in-logo" className="field-label">Business Logo</label>
+          <div style={{display:'flex',alignItems:'center',gap:14}}>
+            {form.logoUrl && (
+              <img src={form.logoUrl} alt="Business logo preview" style={{width:48,height:48,borderRadius:8,objectFit:'cover',border:'1px solid rgba(255,255,255,0.14)'}} />
+            )}
+            <input
+              id="in-logo"
+              type="file"
+              accept="image/*"
+              onChange={e => { const file = e.target.files?.[0]; if (file) uploadLogo(file) }}
+              disabled={uploadingLogo}
+              style={{color:'#9B968A',fontSize:13}}
+            />
+            {uploadingLogo && <span style={{color:'#D4AF37',fontSize:13}}>Uploading…</span>}
+          </div>
         </div>
 
         <div style={cardStyle}>

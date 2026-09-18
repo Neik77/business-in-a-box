@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SD Black Friday Campaign Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:   #0e0e0e;
+    --dark:    #161616;
+    --card:    #1e1e1e;
+    --card2:   #252525;
+    --border:  rgba(255,255,255,0.08);
+    --gold:    #C9A84C;
+    --gold-lt: #E8C97A;
+    --gold-dk: #8B6914;
+    --gold-bg: rgba(201,168,76,0.12);
+    --gold-bd: rgba(201,168,76,0.28);
+    --white:   #ffffff;
+    --muted:   rgba(255,255,255,0.42);
+    --subtle:  rgba(255,255,255,0.1);
+    --ff-h: 'Playfair Display', serif;
+    --ff-b: 'DM Sans', sans-serif;
+    --ff-m: 'Space Mono', monospace;
+  }
+
+  html, body {
+    min-height: 100vh;
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--ff-b);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── PAGE SHELL ── */
+  .page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── SD WATERMARK ── */
+  .watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px;
+    height: 520px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.11;
+  }
+
+  .watermark svg { width: 100%; height: 100%; }
+
+  /* ── HEADER ── */
+  .hdr {
+    position: relative;
+    z-index: 1;
+    padding: 30px 36px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hdr-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .logo-mark {
+    font-family: var(--ff-h);
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1;
+    letter-spacing: -2px;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .hdr-brand-eye {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 3px;
+  }
+
+  .hdr-brand-title {
+    font-family: var(--ff-h);
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  .hdr-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-row {
+    display: flex;
+    gap: 5px;
+    margin-top: 18px;
+  }
+
+  .pip {
+    flex: 1;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--subtle);
+    transition: background 0.4s;
+  }
+  .pip.done   { background: var(--gold); }
+  .pip.active { background: var(--gold-lt); }
+
+  /* ── BODY ── */
+  .body {
+    position: relative;
+    z-index: 1;
+    padding: 30px 36px;
+  }
+
+  /* ── STEPS ── */
+  .step { display: none; }
+  .step.active { display: block; animation: fadeUp 0.3s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-eye {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .step-h {
+    font-family: var(--ff-h);
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--white);
+    margin-bottom: 5px;
+    line-height: 1.25;
+  }
+
+  .step-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.65;
+  }
+
+  /* ── FIELDS ── */
+  .fg { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 7px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-family: var(--ff-b);
+    font-size: 13.5px;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold-bd);
+    background: rgba(201,168,76,0.04);
+  }
+
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
+  select option { background: #1e1e1e; color: #fff; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── CHIPS ── */
+  .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    font-size: 11.5px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    font-family: var(--ff-b);
+    user-select: none;
+  }
+
+  .chip:hover { border-color: var(--gold-bd); color: var(--white); }
+
+  .chip.on {
+    background: var(--gold-bg);
+    border-color: var(--gold);
+    color: var(--gold-lt);
+    font-weight: 500;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-gold {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--gold);
+    color: #111;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--ff-b);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 10px;
+    letter-spacing: 0.2px;
+  }
+  .btn-gold:hover:not(:disabled) { background: var(--gold-lt); transform: translateY(-1px); }
+  .btn-gold:active:not(:disabled) { transform: none; }
+  .btn-gold:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: var(--ff-b);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+  .btn-row { display: flex; gap: 10px; align-items: center; }
+  .btn-row .btn-gold { margin-top: 0; }
+
+  /* ── DIVIDER ── */
+  .div { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+
+  /* ── CONFIRM CHIPS ── */
+  .confirm-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .c-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .c-chip b { color: var(--white); }
+
+  /* ── RESEARCH PHASE ── */
+  .research-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+
+  .research-num {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .research-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .research-prompt {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--gold);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-family: var(--ff-m);
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+    margin-top: 8px;
+  }
+
+  .copy-btn {
+    display: block;
+    margin-bottom: 10px;
+    background: var(--gold-bg);
+    border: 1px solid var(--gold-bd);
+    border-radius: 5px;
+    padding: 4px 12px;
+    font-size: 9px;
+    font-family: var(--ff-m);
+    color: var(--gold);
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: rgba(201,168,76,0.25); }
+  .copy-btn.copied { color: #7ec87e; border-color: rgba(126,200,126,0.3); background: rgba(126,200,126,0.08); }
+
+  /* ── LOADING ── */
+  .loading {
+    display: none;
+    padding: 60px 0;
+    text-align: center;
+  }
+
+  .ring {
+    width: 48px;
+    height: 48px;
+    border: 2.5px solid rgba(201,168,76,0.15);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .load-eye {
+    font-family: var(--ff-m);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .load-status {
+    font-size: 12px;
+    color: var(--muted);
+    min-height: 18px;
+    transition: opacity 0.3s;
+  }
+
+  /* ── OUTPUT ── */
+  .output { display: none; }
+
+  .out-header {
+    margin-bottom: 20px;
+  }
+
+  .out-eye {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 5px;
+  }
+
+  .out-title {
+    font-family: var(--ff-h);
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--white);
+  }
+
+  /* ── DAY CARDS ── */
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .day-card:hover { border-left-color: var(--gold-lt); }
+
+  .day-num {
+    font-family: var(--ff-m);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .day-role {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .day-purpose {
+    font-size: 11px;
+    color: rgba(255,255,255,0.32);
+    font-style: italic;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .day-field {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.58);
+    line-height: 1.65;
+    margin-bottom: 5px;
+  }
+
+  .day-field strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+
+  .day-hook {
+    margin-top: 11px;
+    padding: 11px 15px;
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--gold-lt);
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  .day-hook::before { content: '"'; }
+  .day-hook::after  { content: '"'; }
+
+  /* ── STRATEGY BLOCK ── */
+  .strategy-block {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.16);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-top: 18px;
+  }
+
+  .strategy-block h4 {
+    font-family: var(--ff-h);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold-lt);
+    margin-bottom: 12px;
+  }
+
+  .strategy-block p {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* ── ERROR ── */
+  .err {
+    background: rgba(220,60,60,0.08);
+    border: 1px solid rgba(220,60,60,0.22);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.65);
+    display: none;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── RESTART ── */
+  .restart-btn {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--ff-b);
+    font-size: 12.5px;
+    cursor: pointer;
+    margin-top: 22px;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
+
+  /* ── FALLBACK ── */
+  .fallback { font-size: 13px; color: var(--muted); line-height: 1.8; white-space: pre-wrap; word-wrap: break-word; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 520px) {
+    .body, .hdr { padding-left: 20px; padding-right: 20px; }
+    .row2 { grid-template-columns: 1fr; }
+    .watermark { width: 340px; height: 340px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="card">
+
+    <!-- WATERMARK -->
+    <div class="watermark" aria-hidden="true">
+      <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gD" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#5a4010" />
+            <stop offset="35%"  stop-color="#C9A84C" />
+            <stop offset="55%"  stop-color="#E8C97A" />
+            <stop offset="100%" stop-color="#5a4010" />
+          </linearGradient>
+          <linearGradient id="gS" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#3d3520" />
+            <stop offset="40%"  stop-color="#E8C97A" />
+            <stop offset="60%"  stop-color="#C9A84C" />
+            <stop offset="100%" stop-color="#3d3520" />
+          </linearGradient>
+        </defs>
+        <text x="230" y="295" font-family="Playfair Display, serif" font-weight="900"
+              font-size="320" fill="url(#gD)" text-anchor="middle">D</text>
+        <text x="162" y="280" font-family="Playfair Display, serif" font-weight="900"
+              font-size="268" fill="url(#gS)" text-anchor="middle">S</text>
+      </svg>
+    </div>
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="hdr-top">
+        <div class="logo-mark">SD</div>
+        <div>
+          <div class="hdr-brand-eye">Campaign Builder</div>
+          <div class="hdr-brand-title">Black Friday Edition</div>
+        </div>
+      </div>
+      <div class="hdr-sub">Research first. Plan backward. Every post earns its place.</div>
+      <div class="progress-row" id="pips">
+        <div class="pip" id="p0"></div>
+        <div class="pip" id="p1"></div>
+        <div class="pip" id="p2"></div>
+        <div class="pip" id="p3"></div>
+        <div class="pip" id="p4"></div>
+      </div>
+    </div>
+
+    <!-- BODY -->
+    <div class="body">
+
+      <!-- STEP 0: RESEARCH -->
+      <div class="step" id="s0">
+        <div class="step-eye">Step 1 of 5 &mdash; Research Phase</div>
+        <div class="step-h">Find what your audience is already searching for</div>
+        <div class="step-desc">Before you build a single post, run these prompts in Claude or ChatGPT. Your campaign is only as strong as your research. Copy each prompt, fill in your details, and save the results.</div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 01</div>
+          <div class="research-title">Uncover what your buyer is secretly afraid of</div>
+          <div class="research-prompt">
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            You are a consumer psychology researcher. My ideal customer is [describe your audience] and I sell [your product or service]. I need to understand the real fear underneath their buying hesitation — not the excuse they give, but the deeper emotion driving it. Search Amazon reviews, Facebook group posts, and Reddit threads where people in this audience talk about products like mine. Find the 3 most repeated emotional fears. Write them in their exact words, not polished language.
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 02</div>
+          <div class="research-title">Find out what makes your audience finally say yes</div>
+          <div class="research-prompt">
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            You are a buying behavior analyst. My audience is [describe your audience] and my Black Friday offer is [your offer]. I need to know what specific trigger pushes someone in this audience from interested to ready to buy. Search YouTube comments, Etsy reviews, and online community posts where people describe the moment they decided to purchase something similar. What did they say convinced them? Give me the top 3 decision triggers in their own language.
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 03</div>
+          <div class="research-title">Identify what your competition is getting wrong</div>
+          <div class="research-prompt">
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            You are a competitive intelligence analyst. My niche is [your niche] and my audience is [describe your audience]. Search for the top 5 creators or sellers in my space and find the most common complaints people have about their content, products, or communication style. Look in comment sections, review platforms, and community forums. Give me 3 specific gaps or frustrations my audience has that competitors are not solving. This is where my campaign should position me differently.
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 04</div>
+          <div class="research-title">Find the words that make your audience stop scrolling</div>
+          <div class="research-prompt">
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            You are a copywriting researcher. My audience is [describe your audience] and they spend time on [your platforms]. I need to find the exact phrases, words, and sentence patterns that make this audience stop scrolling and engage. Search high-performing posts in my niche from the last 90 days. Look at what the first line says in posts with the most comments and shares. Give me 5 opening line patterns with examples, and explain why each one works for this specific audience.
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 05</div>
+          <div class="research-title">Discover what your audience tried before that failed them</div>
+          <div class="research-prompt">
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            You are a market research specialist. My audience is [describe your audience] and they are looking for [the result your offer delivers]. Before finding a solution like mine, they likely tried other things that did not work. Search online communities, comment sections, and review threads where this audience talks about previous attempts and failures. Find the top 3 things they tried that disappointed them and the exact language they used to describe why it did not work. I will use this in my campaign to show them I understand their journey.
+          </div>
+        </div>
+
+        <div class="research-card">
+          <div class="research-num">Prompt 06</div>
+          <div class="research-title">Map your audience's Black Friday buying mindset</div>
+          <div class="research-prompt">
+            <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+            You are a seasonal consumer behavior analyst. My audience is [describe your audience] and I am planning a Black Friday campaign for [your offer]. I need to understand how this specific audience thinks and behaves during Black Friday. Search for posts, threads, and discussions where people like my audience talk about Black Friday shopping decisions. What makes them buy during this season versus wait? What offers excite them versus feel like a gimmick? Give me 3 insights I can use to position my campaign so it feels like exactly what they were waiting for.
+          </div>
+        </div>
+
+        <button class="btn-gold" onclick="go(1)">I've Done My Research &rarr; Build My Campaign</button>
+      </div>
+
+      <!-- STEP 1: AUDIENCE -->
+      <div class="step" id="s1">
+        <div class="step-eye">Step 2 of 5 &mdash; Your Audience</div>
+        <div class="step-h">Who is your business for?</div>
+        <div class="step-desc">Everything starts here. The clearer your person, the sharper every post will be.</div>
+
+        <div class="fg">
+          <label>Your niche or business type</label>
+          <input type="text" id="niche" placeholder="e.g. DTF crafting, AI content coaching, digital products..." />
+        </div>
+
+        <div class="fg">
+          <label>Who is your ideal customer?</label>
+          <input type="text" id="audience" placeholder="e.g. female entrepreneurs 40+, crafters who sell on Etsy..." />
+        </div>
+
+        <div class="fg">
+          <label>Their biggest struggle right now</label>
+          <div class="chips" id="painChips">
+            <div class="chip" data-v="not enough time">Not enough time</div>
+            <div class="chip" data-v="confused about where to start">Confused, don't know where to start</div>
+            <div class="chip" data-v="not making enough money">Not making enough money</div>
+            <div class="chip" data-v="content feels scattered">Content feels scattered</div>
+            <div class="chip" data-v="don't know what to sell">Don't know what to sell</div>
+            <div class="chip" data-v="creating but not converting">Creating but not converting</div>
+          </div>
+          <input type="text" id="pain" style="margin-top:10px" placeholder="Or type their specific struggle..." />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="go(0)">&larr; Back</button>
+          <button class="btn-gold" style="flex:1" onclick="go(2)">Next: Your Offer &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: OFFER -->
+      <div class="step" id="s2">
+        <div class="step-eye">Step 3 of 5 &mdash; Your Offer</div>
+        <div class="step-h">What are you selling?</div>
+        <div class="step-desc">Begin with the end in mind. Lock in the offer before anything else gets built. This is what every post in the campaign is building toward.</div>
+
+        <div class="fg">
+          <label>Your Black Friday offer</label>
+          <input type="text" id="offer" placeholder="e.g. DTF Design Bundle, Content Workshop Replay, Coaching Package..." />
+        </div>
+
+        <div class="row2">
+          <div class="fg">
+            <label>Price point</label>
+            <input type="text" id="price" placeholder="e.g. $97, $47..." />
+          </div>
+          <div class="fg">
+            <label>Delivery format</label>
+            <select id="format">
+              <option value="">Select...</option>
+              <option>Digital download</option>
+              <option>Replay / recording</option>
+              <option>Live workshop</option>
+              <option>Membership access</option>
+              <option>Physical product</option>
+              <option>Design files / templates</option>
+              <option>1:1 coaching</option>
+              <option>Course / program</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Transformation your offer delivers</label>
+          <textarea id="transformation" placeholder="Before: they struggle with X. After: they now have Y and feel Z..."></textarea>
+        </div>
+
+        <div class="fg">
+          <label>Main objection buyers will have</label>
+          <div class="chips" id="objChips">
+            <div class="chip" data-v="I don't have time">"I don't have time"</div>
+            <div class="chip" data-v="It's too expensive">"Too expensive"</div>
+            <div class="chip" data-v="I'm not sure it works">"Not sure it works"</div>
+            <div class="chip" data-v="I'll do it later">"I'll do it later"</div>
+            <div class="chip" data-v="I can figure it out myself">"I'll figure it out"</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="go(1)">&larr; Back</button>
+          <button class="btn-gold" style="flex:1" onclick="go(3)">Next: Campaign Setup &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: CAMPAIGN -->
+      <div class="step" id="s3">
+        <div class="step-eye">Step 4 of 5 &mdash; Campaign Setup</div>
+        <div class="step-h">Build the campaign backward</div>
+        <div class="step-desc">Your sale is the finish line. Every post before it is a stepping stone. Tell us how to lay them out.</div>
+
+        <div class="fg">
+          <label>Platforms you will post on</label>
+          <div class="chips" id="platChips">
+            <div class="chip" data-v="Facebook">Facebook</div>
+            <div class="chip" data-v="Instagram">Instagram</div>
+            <div class="chip" data-v="TikTok">TikTok</div>
+            <div class="chip" data-v="Skool">Skool</div>
+            <div class="chip" data-v="Email list">Email list</div>
+            <div class="chip" data-v="YouTube">YouTube</div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Content assets you already have</label>
+          <textarea id="assets" placeholder="e.g. AI-generated images, product mockups, design samples, live replay recordings..."></textarea>
+        </div>
+
+        <div class="fg">
+          <label>Brand tone</label>
+          <div class="chips" id="toneChips">
+            <div class="chip on" data-v="warm and real">Warm and real</div>
+            <div class="chip" data-v="bold and direct">Bold and direct</div>
+            <div class="chip" data-v="educational and nurturing">Educational</div>
+            <div class="chip" data-v="funny and relatable">Funny and relatable</div>
+            <div class="chip" data-v="faith-based and uplifting">Faith-based</div>
+            <div class="chip" data-v="professional and premium">Professional and premium</div>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Discount or urgency element</label>
+          <input type="text" id="urgency" placeholder="e.g. 50% off for 48 hours, bonus for first 10 buyers, closes Nov 29..." />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-ghost" onclick="go(2)">&larr; Back</button>
+          <button class="btn-gold" style="flex:1" onclick="go(4)">Next: Review &rarr;</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: CONFIRM -->
+      <div class="step" id="s4">
+        <div class="step-eye">Step 5 of 5 &mdash; Confirm and Build</div>
+        <div class="step-h">Everything looks good?</div>
+        <div class="step-desc">Review what we collected. Hit build and your full 7-day campaign gets created.</div>
+
+        <div class="confirm-grid" id="confirmGrid"></div>
+
+        <button class="btn-gold" id="buildBtn" onclick="buildCampaign()">&#9889; Build My 7-Day Campaign</button>
+        <button class="btn-ghost" onclick="go(3)">&larr; Back</button>
+      </div>
+
+      <!-- LOADING -->
+      <div class="loading" id="loading">
+        <div class="ring"></div>
+        <div class="load-eye">Building your campaign</div>
+        <div class="load-status" id="loadStatus">Analyzing your audience...</div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="output" id="output">
+        <div class="err" id="errBox"></div>
+        <div class="out-header">
+          <div class="out-eye">Your 7-Day Black Friday Campaign</div>
+          <div class="out-title" id="outTitle"></div>
+        </div>
+        <div id="outContent"></div>
+        <button class="restart-btn" onclick="restart()">&#8635; Build a new campaign</button>
+      </div>
+
+    </div><!-- /body -->
+  </div><!-- /card -->
+</div><!-- /page -->
+
+<script>
+  const D = {
+    niche:'', audience:'', pain:'', offer:'', price:'',
+    format:'', transformation:'', objection:'',
+    platforms:[], assets:'', tone:'warm and real', urgency:''
+  };
+
+  const loadMsgs = [
+    'Analyzing your audience and pain points...',
+    'Mapping the 7-day sequence backward from sale day...',
+    'Building Day 1 — Problem Recognition...',
+    'Building Day 2 — Audience Connection...',
+    'Building Day 3 — Education...',
+    'Building Day 4 — Belief Building...',
+    'Building Day 5 — Offer Introduction...',
+    'Building Day 6 — Objection Support...',
+    'Building Day 7 — Purchase Invitation...',
+    'Writing your Campaign Strategy Notes...',
+    'Finalizing your campaign...'
+  ];
+
+  function setPips(cur) {
+    for (let i = 0; i < 5; i++) {
+      const p = document.getElementById('p' + i);
+      p.className = 'pip' + (i < cur ? ' done' : i === cur ? ' active' : '');
+    }
+  }
+
+  function showOnly(id) {
+    ['s0','s1','s2','s3','s4','loading','output'].forEach(x => {
+      const el = document.getElementById(x);
+      if (!el) return;
+      el.style.display = 'none';
+      el.className = el.className.replace(' active', '').trim();
+    });
+    const t = document.getElementById(id);
+    if (!t) return;
+    t.style.display = 'block';
+    setTimeout(() => t.classList.add('active'), 10);
+  }
+
+  function go(n) {
+    if (n === 2) {
+      D.niche    = document.getElementById('niche').value.trim();
+      D.audience = document.getElementById('audience').value.trim();
+      if (!D.niche || !D.audience) { alert('Please fill in your niche and ideal customer.'); return; }
+      const pc = document.querySelector('#painChips .chip.on');
+      const pi = document.getElementById('pain').value.trim();
+      D.pain = pi || (pc ? pc.dataset.v : 'feeling stuck and overwhelmed');
+    }
+    if (n === 3) {
+      D.offer  = document.getElementById('offer').value.trim();
+      if (!D.offer) { alert('Please enter your Black Friday offer.'); return; }
+      D.price          = document.getElementById('price').value.trim();
+      D.format         = document.getElementById('format').value;
+      D.transformation = document.getElementById('transformation').value.trim();
+      const oc = document.querySelector('#objChips .chip.on');
+      D.objection = oc ? oc.dataset.v : "I\'ll do it later";
+    }
+    if (n === 4) {
+      D.platforms = [...document.querySelectorAll('#platChips .chip.on')].map(c => c.dataset.v);
+      D.assets    = document.getElementById('assets').value.trim();
+      const tc    = document.querySelector('#toneChips .chip.on');
+      D.tone      = tc ? tc.dataset.v : 'warm and real';
+      D.urgency   = document.getElementById('urgency').value.trim();
+      buildConfirm();
+    }
+    showOnly('s' + n);
+    setPips(n);
+  }
+
+  function buildConfirm() {
+    const pairs = [
+      ['Niche', D.niche], ['Audience', D.audience], ['Pain', D.pain],
+      ['Offer', D.offer], ['Price', D.price], ['Format', D.format],
+      ['Platforms', D.platforms.join(', ')], ['Tone', D.tone], ['Urgency', D.urgency]
+    ].filter(([,v]) => v);
+    document.getElementById('confirmGrid').innerHTML =
+      pairs.map(([k,v]) => `<div class="c-chip">${k}: <b>${v}</b></div>`).join('');
+    document.getElementById('outTitle').textContent = D.offer;
+  }
+
+  function wireChips(id, multi) {
+    document.querySelectorAll(`#${id} .chip`).forEach(c => {
+      c.addEventListener('click', function() {
+        if (multi) {
+          this.classList.toggle('on');
+        } else {
+          document.querySelectorAll(`#${id} .chip`).forEach(x => x.classList.remove('on'));
+          this.classList.add('on');
+          if (id === 'painChips') document.getElementById('pain').value = this.dataset.v;
+        }
+      });
+    });
+  }
+
+  wireChips('painChips', false);
+  wireChips('objChips',  false);
+  wireChips('platChips', true);
+  wireChips('toneChips', false);
+
+  function copyPrompt(btn) {
+    const box = btn.closest('.research-prompt');
+    const clone = box.cloneNode(true);
+    clone.querySelector('button').remove();
+    const text = clone.textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ── TONE VOICE PATTERNS ──
+  function toneVoice(tone) {
+    const map = {
+      'warm and real':           { opener: 'Real talk', connector: 'Here is the truth', cta_feel: 'come as you are' },
+      'bold and direct':         { opener: 'No fluff', connector: 'Here is what that means', cta_feel: 'make your move' },
+      'educational and nurturing': { opener: 'Quick lesson', connector: 'Here is why that matters', cta_feel: 'keep learning' },
+      'funny and relatable':     { opener: 'Okay so', connector: 'And here is the thing', cta_feel: 'you already know what to do' },
+      'faith-based and uplifting': { opener: 'This is your season', connector: 'Here is what I know', cta_feel: 'walk in it' },
+      'professional and premium': { opener: 'Here is what the data shows', connector: 'What that means for you', cta_feel: 'secure your spot' }
+    };
+    return map[tone] || map['warm and real'];
+  }
+
+  // ── PAIN TO HOOK PATTERNS ──
+  function painHooks(pain, audience, niche) {
+    return [
+      `You built something real. So why does it feel like nobody sees it?`,
+      `If you are in ${niche} and you are tired of ${pain} — this is for you.`,
+      `${audience} are not lazy. They are just missing the right system.`,
+      `The reason ${pain} keeps happening has nothing to do with how hard you work.`,
+      `Stop scrolling. This is the post you needed to see today.`,
+      `What if the thing holding you back is not what you think it is?`,
+      `Most people in ${niche} never talk about this. I am going to.`
+    ];
+  }
+
+  // ── OBJECTION BUSTERS ──
+  function objectionBuster(obj, offer, price) {
+    const map = {
+      "I don\'t have time": `You do not have time NOT to do this. Every week you wait is another week without results. ${offer} takes less time than you think — and it saves you months of guessing.`,
+      "It's too expensive": `${price ? price + ' is' : 'This is'} not a cost. It is a shortcut. Think about what it costs you every month to stay stuck. ${offer} pays for itself the first time you use what is inside.`,
+      "I\'m not sure it works": `I get the skepticism. That is why I am not asking you to take my word for it. ${offer} was built from real results, real feedback, and real people who were exactly where you are now.`,
+      "I\'ll do it later": `Later has a cost. Every day you wait, someone in your space is moving. Black Friday pricing disappears when the clock hits zero — and it does not come back.`,
+      "I can figure it out myself": `You probably could. But how long will that take? And how much will you spend testing what already has a proven path? ${offer} skips the trial and error and hands you what works.`
+    };
+    return map[obj] || `Here is the truth about ${obj}: it is costing you more to wait than it would to move. ${offer} exists to remove exactly this barrier.`;
+  }
+
+  // ── CTA PATTERNS BY DAY ──
+  function cta(day, offer, platforms) {
+    const plat = platforms.length ? platforms[0] : 'the link in bio';
+    const map = {
+      1: `Drop a 1 in the comments if this hit home.`,
+      2: `Tell me in the comments — does this sound like you?`,
+      3: `Save this post. You will want to come back to it.`,
+      4: `Share this with someone who needs to see it today.`,
+      5: `Comment INFO below and I will send you the details on ${offer}.`,
+      6: `Reply with your biggest hesitation and I will answer it personally.`,
+      7: `Black Friday pricing ends soon. Click the link${platforms.includes('Instagram') ? ' in bio' : ''} to grab ${offer} before it closes.`
+    };
+    return map[day] || `Take the next step today.`;
+  }
+
+  // ── IMAGE IDEAS BY DAY ──
+  function imageIdea(day, assets, niche, audience) {
+    const assetList = assets || 'your best product or content image';
+    const ideas = {
+      1: `A relatable image of someone looking overwhelmed or stuck. Pull from ${assetList} — choose something that shows the before, not the after.`,
+      2: `A warm, direct-to-camera image of you or a photo that feels personal. Your audience needs to see a real person, not a polished brand shot.`,
+      3: `A simple graphic, screenshot, or step-by-step visual that shows your process. If you have a mockup or diagram in ${assetList}, use it here.`,
+      4: `A results image, testimonial screenshot, or before-and-after visual from ${assetList}. Real proof beats polished graphics every time.`,
+      5: `A clean, attractive image of your actual offer — the product, the cover, the mockup. Pull the best visual from ${assetList}.`,
+      6: `A conversational image — you speaking directly to camera, or a bold text graphic that calls out the objection head-on.`,
+      7: `Your strongest offer image paired with urgency text overlay. Use your best product shot from ${assetList} and add the deadline visually.`
+    };
+    return ideas[day] || `Choose your strongest image from ${assetList}.`;
+  }
+
+  // ── PLATFORM TIPS ──
+  function platformTip(day, platforms) {
+    const tips = {
+      1: { Facebook: 'Post in the morning 8-10am for maximum organic reach. Ask a question at the end to trigger comments.', Instagram: 'Use a bold first frame on Reels. The hook must appear in the first 2 seconds.', TikTok: 'Lead with the pain point in the first word you say. Do not wait to get to the point.', Email: 'Subject line: use their exact pain words. No clever wordplay — clarity wins.', Skool: 'Post as a discussion, not an announcement. Ask the community if they relate.', YouTube: 'Title should name the pain. Thumbnail should show the emotion.' },
+      2: { Facebook: 'Share a personal story in the caption. Facebook rewards longer, emotional posts with more reach.', Instagram: 'Carousel works well for connection posts — swipe to reveal the relatable moments.', TikTok: 'Film this one looking straight into the camera. Eye contact builds trust fast.', Email: 'Open with "I want to tell you something" — this drives opens and reads.', Skool: 'Tag members who have expressed this struggle before. Make it personal.', YouTube: 'Use a talking-head format with no cuts. Authenticity beats production here.' },
+      3: { Facebook: 'Educational posts do well as video or carousel. Break the lesson into numbered steps.', Instagram: 'Carousel: one lesson per slide, plain background, bold text. Save rate goes up.', TikTok: 'Use text on screen so viewers get the value even without sound.', Email: 'Lead with the lesson in the subject line: "The 3-step system I use for [result]"', Skool: 'Post as a pinned resource if the platform allows. Mark it as a lesson.', YouTube: 'This is a great format for a short tutorial — under 8 minutes performs best.' },
+      4: { Facebook: 'Share a screenshot of a real win or testimonial. Tag the person if you have permission.', Instagram: 'Stories work well for proof — polls and question stickers increase engagement.', TikTok: 'Duet or stitch a testimonial if you have one on video. Social proof in action.', Email: 'Forward-format email works well: "I wanted you to see what [name] just said..."', Skool: 'Create a wins post and ask members to comment their own results below.', YouTube: 'Case study format — walk through someone\'s transformation step by step.' },
+      5: { Facebook: 'Keep the caption focused. One offer, one link, one ask. Facebook penalizes posts that feel like ads.', Instagram: 'Use link in bio and mention it twice — once mid-caption and once in the CTA.', TikTok: 'Add the offer link to your bio before posting. Mention "link in bio" in the video.', Email: 'Name the offer in the subject line and the first sentence. Repeat it three times total.', Skool: 'Pin this post to the top of the community for the remainder of the campaign.', YouTube: 'Put the offer link in the first line of the description and pin it as a comment.' },
+      6: { Facebook: 'Post as a question: "What is stopping you from [result]?" Let the objections surface in comments then respond to each one.', Instagram: 'Use the Q&A sticker in Stories to collect objections and answer them live.', TikTok: 'Film a response video to a real comment. Reply videos get high reach.', Email: 'Subject line: "You said [objection] — here is the truth." This drives high open rates.', Skool: 'Open a discussion thread: "What questions do you have about [offer]?" Answer every reply.', YouTube: 'FAQ video format — answer the top 3 objections in one video, rapid fire.' },
+      7: { Facebook: 'Post 3 times today: morning launch, midday reminder, evening final call. Vary the caption each time.', Instagram: 'Use countdown sticker in Stories. Post your offer image in feed and Stories simultaneously.', TikTok: 'Post urgency video in the morning. Go live in the evening to close.', Email: 'Send two emails today: one at 8am and one at 7pm. Second email subject: "Last chance — [offer] closes at midnight."', Skool: 'Post a final pinned announcement with the exact deadline and link. Send a DM to engaged members.', YouTube: 'Post a "last chance" Community tab update with the deadline and offer link.' }
+    };
+    if (!platforms.length) return 'Post consistently across all your channels today. Repeat the message in different formats.';
+    const tip = tips[day];
+    if (!tip) return 'Stay consistent and post at your peak audience times today.';
+    for (const plat of platforms) {
+      if (tip[plat]) return `${plat}: ${tip[plat]}`;
+    }
+    return 'Post at your peak audience time and engage with every comment within the first hour.';
+  }
+
+  // ── BUILD THE 7 DAY CAMPAIGN ──
+  function generateCampaign() {
+    const voice = toneVoice(D.tone);
+    const hooks = painHooks(D.pain, D.audience, D.niche);
+    const priceStr = D.price ? D.price : 'this offer';
+    const urgencyStr = D.urgency || 'Black Friday pricing ends at midnight';
+    const formatStr = D.format || 'digital product';
+    const transformStr = D.transformation || `go from struggling with ${D.pain} to having a clear path forward`;
+
+    const days = [
+      {
+        day: 1,
+        role: 'PROBLEM RECOGNITION',
+        purpose: 'Open the conversation by naming exactly what your audience is living with. No pitch. Just truth. This post earns the right to sell later.',
+        angle: `Call out the specific pain of ${D.pain} in a way that makes ${D.audience} feel seen. Name the invisible cost of staying stuck — the time lost, the money left behind, the frustration that keeps building.`,
+        hook: hooks[0],
+        caption: `${voice.opener} — ${D.pain} is not a personal failure. It is a systems problem. And ${D.audience} deal with it constantly because nobody handed them the right map. The cost is real: every week this goes unaddressed is another week of spinning. Today is the day we name it so we can fix it.`,
+        image: imageIdea(1, D.assets, D.niche, D.audience),
+        ctaText: cta(1, D.offer, D.platforms),
+        tip: platformTip(1, D.platforms)
+      },
+      {
+        day: 2,
+        role: 'AUDIENCE CONNECTION',
+        purpose: 'Make them feel understood before you try to help them. People buy from people who get them. This post builds that bridge.',
+        angle: `Share a real moment that mirrors what ${D.audience} experience. Show you understand their world — not just their problem, but the emotion underneath it. ${voice.connector} about why you care about this audience specifically.`,
+        hook: hooks[2],
+        caption: `I know what it feels like to be ${D.audience} navigating ${D.niche}. You are working hard, you are showing up, and you still feel like something is missing. You are not behind. You are just building without the right blueprint. That changes now.`,
+        image: imageIdea(2, D.assets, D.niche, D.audience),
+        ctaText: cta(2, D.offer, D.platforms),
+        tip: platformTip(2, D.platforms)
+      },
+      {
+        day: 3,
+        role: 'EDUCATION',
+        purpose: 'Give real value with no strings attached. Teaching builds trust faster than any sales message. This post positions you as the expert.',
+        angle: `Teach ${D.audience} one specific thing about ${D.niche} that they can use today. Break down a common mistake, share a framework, or walk through a process step by step. Make it actionable enough to use before they ever buy anything.`,
+        hook: `Here is the one thing most people in ${D.niche} get completely wrong — and it is fixable today.`,
+        caption: `${voice.opener}: most people in ${D.niche} focus on the wrong thing first. Here is what actually moves the needle for ${D.audience}. Step one is understanding your starting point. Step two is removing what is not working. Step three is replacing it with what does. That is the framework. Save this — you will need it.`,
+        image: imageIdea(3, D.assets, D.niche, D.audience),
+        ctaText: cta(3, D.offer, D.platforms),
+        tip: platformTip(3, D.platforms)
+      },
+      {
+        day: 4,
+        role: 'BELIEF BUILDING',
+        purpose: 'Proof kills doubt. Before you introduce your offer, show your audience that transformation is real and possible for someone exactly like them.',
+        angle: `Share a real result, testimonial, or story that shows what is possible for ${D.audience} in ${D.niche}. The goal is not to brag — it is to make them believe that the outcome they want actually exists and that someone just like them got there.`,
+        hook: `This is what happens when ${D.audience} stop waiting and start building.`,
+        caption: `The transformation is real. When ${D.audience} have the right system for ${D.niche}, everything shifts. The work does not get easier — it gets smarter. And smarter work in the right direction produces results that feel like they came out of nowhere. They did not. They came from a decision. ${voice.connector}: the decision is available to you right now.`,
+        image: imageIdea(4, D.assets, D.niche, D.audience),
+        ctaText: cta(4, D.offer, D.platforms),
+        tip: platformTip(4, D.platforms)
+      },
+      {
+        day: 5,
+        role: 'OFFER INTRODUCTION',
+        purpose: 'Introduce what you have — softly. By now your audience knows you, trusts you, and believes change is possible. Now show them the door.',
+        angle: `Introduce ${D.offer} as the natural next step for ${D.audience} who are ready to ${transformStr}. Keep it soft — one clear description of what it is, who it is for, and what they walk away with. No hard sell yet.`,
+        hook: `I built something for ${D.audience} who are done with ${D.pain}. Here is what it is.`,
+        caption: `${D.offer} is here. This is for ${D.audience} in ${D.niche} who are ready to ${transformStr}. It is ${formatStr} designed to remove the guesswork and hand you what works. ${priceStr} for Black Friday. Full details dropping soon — make sure you are following so you do not miss it.`,
+        image: imageIdea(5, D.assets, D.niche, D.audience),
+        ctaText: cta(5, D.offer, D.platforms),
+        tip: platformTip(5, D.platforms)
+      },
+      {
+        day: 6,
+        role: 'OBJECTION SUPPORT',
+        purpose: 'Your buyer has a reason they are hesitating. Address it directly and honestly. This post removes the last barrier between them and yes.',
+        angle: `Call out the exact objection "${D.objection}" and answer it head-on with honesty, not pressure. Show that you understand why they feel that way — then dismantle it with truth. This post is not a hard close. It is a real conversation.`,
+        hook: `You said "${D.objection}" — I hear that. Here is what I want you to know.`,
+        caption: objectionBuster(D.objection, D.offer, D.price),
+        image: imageIdea(6, D.assets, D.niche, D.audience),
+        ctaText: cta(6, D.offer, D.platforms),
+        tip: platformTip(6, D.platforms)
+      },
+      {
+        day: 7,
+        role: 'PURCHASE INVITATION',
+        purpose: 'This is the close. Clear, direct, urgent. Your audience has had 6 days to get ready. Today you give them the reason to act now.',
+        angle: `Make the final ask with confidence. State the offer, the price, the deadline, and the transformation one last time — clearly and without apology. ${urgencyStr}. Make this the post that converts everything you have built this week.`,
+        hook: `Today is the day. ${D.offer} — Black Friday pricing closes tonight.`,
+        caption: `This is it. ${D.offer} at Black Friday pricing. For ${D.audience} who are ready to ${transformStr}. ${priceStr}. ${urgencyStr}. No extensions. No exceptions. Everything you need is waiting on the other side of this decision. ${voice.cta_feel.charAt(0).toUpperCase() + voice.cta_feel.slice(1)}.`,
+        image: imageIdea(7, D.assets, D.niche, D.audience),
+        ctaText: cta(7, D.offer, D.platforms),
+        tip: platformTip(7, D.platforms)
+      }
+    ];
+
+    const strategyNotes = `Your audience — ${D.audience} — responds best when they feel understood before they feel sold to. The research is clear: buyers in this space need to see themselves in your content before they will ever consider your offer. This campaign is structured to build that recognition first, then trust, then desire, then action. Every day earns the next day's right to go deeper.
+
+The gap this campaign fills: most creators in ${D.niche} either post educational content with no path to purchase, or they sell without warming the audience first. This 7-day sequence bridges both. It teaches, it connects, it proves, and then it sells — in the exact order that the research shows converts best. The result is an audience that arrives at Day 7 already convinced, not being pushed.
+
+The one thing most people skip before Black Friday: they never name the objection out loud. They assume if they make the offer clear enough, people will just buy. But the research is consistent — the biggest conversion killer is unaddressed doubt. Day 6 of this campaign does what most campaigns never do: it looks the buyer's hesitation in the eye and answers it directly. That honesty is what separates a campaign that converts from one that gets ignored.`;
+
+    return { days, strategyNotes };
+  }
+
+  function buildCampaign() {
+    document.getElementById('buildBtn').disabled = true;
+    showOnly('loading');
+    setPips(5);
+
+    let mi = 0;
+    const ticker = setInterval(() => {
+      document.getElementById('loadStatus').textContent = loadMsgs[mi % loadMsgs.length];
+      mi++;
+    }, 700);
+
+    setTimeout(() => {
+      clearInterval(ticker);
+      try {
+        const { days, strategyNotes } = generateCampaign();
+        renderOutput(days, strategyNotes);
+      } catch(e) {
+        showOnly('output');
+        const eb = document.getElementById('errBox');
+        eb.style.display = 'block';
+        eb.innerHTML = `Something went wrong. Please try again.<br><small style="opacity:0.5">${e.message}</small>`;
+        document.getElementById('buildBtn').disabled = false;
+      }
+    }, 5500);
+  }
+
+  function renderOutput(days, strategyNotes) {
+    showOnly('output');
+    document.getElementById('errBox').style.display = 'none';
+
+    let html = days.map(b => `
+      <div class="day-card">
+        <div class="day-num">Day ${b.day}</div>
+        <div class="day-role">${b.role}</div>
+        <div class="day-purpose">${b.purpose}</div>
+        <div class="day-field"><strong>Content angle:</strong> ${b.angle}</div>
+        <div class="day-field"><strong>Image idea:</strong> ${b.image}</div>
+        <div class="day-field"><strong>Caption direction:</strong> ${b.caption}</div>
+        <div class="day-field"><strong>CTA:</strong> ${b.ctaText}</div>
+        <div class="day-field" style="font-size:11.5px;color:rgba(255,255,255,0.32)">&#9654; ${b.tip}</div>
+        <div class="day-hook">${b.hook}</div>
+      </div>
+    `).join('');
+
+    html += `<div class="strategy-block">
+      <h4>Campaign Strategy Notes</h4>
+      <p>${strategyNotes}</p>
+    </div>`;
+
+    document.getElementById('outContent').innerHTML = html;
+  }
+
+  function restart() {
+    document.querySelectorAll('.chip').forEach(c => {
+      c.classList.remove('on');
+      if (c.closest('#toneChips') && c.dataset.v === 'warm and real') c.classList.add('on');
+    });
+    document.querySelectorAll('input[type="text"], textarea').forEach(f => f.value = '');
+    document.querySelectorAll('select').forEach(f => f.value = '');
+    Object.keys(D).forEach(k => D[k] = Array.isArray(D[k]) ? [] : '');
+    D.tone = 'warm and real';
+    document.getElementById('buildBtn').disabled = false;
+    document.getElementById('errBox').style.display = 'none';
+    showOnly('s0');
+    setPips(0);
+  }
+
+  showOnly('s0');
+  setPips(0);
+
+</script>
+</body>
+</html>
