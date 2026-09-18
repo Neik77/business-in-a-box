@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { SALES_ROOMS, SALES_COACH, SALES_COMPLETION_REWARD } from '@/lib/salesRooms';
 import KJCoach from '@/components/sales/KJCoach';
 import SalesRoomCard from '@/components/sales/SalesRoomCard';
 
 export default function SalesPage() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [completedRooms, setCompletedRooms] = useState([]);

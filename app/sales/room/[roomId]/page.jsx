@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import { SALES_ROOMS, SALES_ROOM_BADGES } from '@/lib/salesRooms';
 
 export default function SalesRoomPage() {
   const router = useRouter();
   const params = useParams();
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   const roomId = params.roomId;
   const room = SALES_ROOMS.find((r) => r.id === roomId);
   const [user, setUser] = useState(null);
