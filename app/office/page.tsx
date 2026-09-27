@@ -185,7 +185,7 @@ export default function OfficePage() {
         }),
       })
       const data = await res.json()
-      const reply = data.reply || "I'm here. Tell me more."
+      const reply = data.text || "I'm here. Tell me more."
       setChatMessages(prev => ({ ...prev, [roomId]: [...(prev[roomId] || []), { role: 'assistant', content: reply }] }))
     } catch {
       setChatMessages(prev => ({ ...prev, [roomId]: [...(prev[roomId] || []), { role: 'assistant', content: "Connection issue. Try again in a moment." }] }))
