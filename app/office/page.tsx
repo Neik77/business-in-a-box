@@ -295,10 +295,10 @@ export default function OfficePage() {
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
-              placeholder="Ask your CEO Coach..."
+              placeholder="Ask your CEO Coach..." autoComplete="off"
               style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }}
             />
-            <button onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
+            <button type="button" onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
           </div>
         </div>
       </div>
