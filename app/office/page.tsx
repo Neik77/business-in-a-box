@@ -85,6 +85,7 @@ export default function OfficePage() {
   const router = useRouter()
   const supabase = createClient()
   const chatEndRef = useRef<HTMLDivElement>(null)
+  const chatInputRef = useRef<HTMLInputElement>(null)
 
   // ── LOAD USER + PROFILE ──
   useEffect(() => {
@@ -136,6 +137,12 @@ export default function OfficePage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [chatMessages])
+
+  useEffect(() => {
+    if (activeRoom === 'coach' && chatInputRef.current) {
+      chatInputRef.current.focus()
+    }
+  }, [chatInput, activeRoom])
 
   // ── SAVE ROOM PROGRESS ──
   const saveRoom = async (roomId: string) => {
@@ -295,7 +302,7 @@ export default function OfficePage() {
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
-              placeholder="Ask your CEO Coach..." autoComplete="off"
+              placeholder="Ask your CEO Coach..." autoComplete="off" ref={chatInputRef}
               style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }}
             />
             <button type="button" onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
