@@ -6,6 +6,78 @@ import { useRouter } from 'next/navigation'
 
 type ChatMessage = { role: 'assistant' | 'user'; content: string }
 
+// -- MARKETING CHAT PANEL (module scope - do not nest inside page component) --
+function ChatPanel({ roomId, border, chatEndRef, chatInput, chatLoading, chatMessages, gold, goldDim, muted, profile, roomId, s, sendChat, setChatInput, user, white, whiteD }: {
+  roomId: string
+  border: string
+  chatEndRef: { current: HTMLDivElement | null }
+  chatInput: string
+  chatLoading: boolean
+  chatMessages: Record<string, { role: 'assistant' | 'user'; content: string }[]>
+  gold: string
+  goldDim: string
+  muted: string
+  profile: any
+  roomId: string
+  s: any
+  sendChat: (roomId: string, msg?: string) => void
+  setChatInput: (v: string) => void
+  user: any
+  white: string
+  whiteD: string
+}) {
+
+    const msgs = chatMessages[roomId] || []
+    const prompts: Record<string, string[]> = {
+      brand: ['Write my brand tagline', 'What makes my brand different?', 'Help me define my brand voice'],
+      audience: ['Write my audience messaging', 'What should I say to get attention?', 'What content resonates with my audience?'],
+      plan: ['Build my marketing plan', 'What should I focus on first?', 'How do I market with no budget?'],
+      content: ['Build my content calendar', 'What content should I create this week?', 'Give me 30 content ideas'],
+      social: ['Which platform should I focus on?', 'How often should I post?', 'What gets the most engagement?'],
+      promos: ['Plan a flash sale', 'What promotions work best?', 'Help me create urgency without discounting'],
+      local: ['How do I get found locally?', 'Should I do local events?', 'Help me with Google Business Profile'],
+      email: ['Help me write a welcome email', 'How do I grow my email list?', 'What should I send my list this week?'],
+      coach: ['Review my marketing strategy', 'What should I prioritize?', 'How do I get more visibility fast?'],
+    }
+    return (
+      <div style={{ marginTop: 24 }}>
+        <div style={{ ...s.sectionTitle, marginBottom: 4 }}>Marketing Coach - Ask Anything</div>
+        <p style={s.sectionDesc}>Ask your Marketing Coach anything about brand, content, social, email, and audience growth.</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          {(prompts[roomId] || []).map(p => (
+            <button key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
+          ))}
+        </div>
+        <div style={{ background: '#0c0c0c', border: `1px solid ${border}`, borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: 20, minHeight: 180, maxHeight: 320, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {msgs.map((m, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', maxWidth: '88%' }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: m.role === 'assistant' ? goldDim : '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: white, flexShrink: 0 }}>
+                  {m.role === 'assistant' ? 'MK' : (profile?.owner_name?.charAt(0) || 'U')}
+                </div>
+                <div style={{ background: m.role === 'user' ? 'rgba(212,175,55,0.1)' : '#1a1a1a', border: `1px solid ${m.role === 'user' ? goldDim : border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: m.role === 'user' ? white : whiteD, lineHeight: 1.6 }}>
+                  {m.content}
+                </div>
+              </div>
+            ))}
+            {chatLoading && (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: goldDim, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: white }}>MK</div>
+                <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+          <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
+            <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }} placeholder="Ask your Marketing Coach..." style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }} />
+            <button onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
+          </div>
+        </div>
+      </div>
+    )
+  
+}
+
 export default function MarketingStudio() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
@@ -133,57 +205,6 @@ export default function MarketingStudio() {
 
   const progressPct = Math.round((completedRooms.size / 9) * 100)
 
-  const ChatPanel = ({ roomId }: { roomId: string }) => {
-    const msgs = chatMessages[roomId] || []
-    const prompts: Record<string, string[]> = {
-      brand: ['Write my brand tagline', 'What makes my brand different?', 'Help me define my brand voice'],
-      audience: ['Write my audience messaging', 'What should I say to get attention?', 'What content resonates with my audience?'],
-      plan: ['Build my marketing plan', 'What should I focus on first?', 'How do I market with no budget?'],
-      content: ['Build my content calendar', 'What content should I create this week?', 'Give me 30 content ideas'],
-      social: ['Which platform should I focus on?', 'How often should I post?', 'What gets the most engagement?'],
-      promos: ['Plan a flash sale', 'What promotions work best?', 'Help me create urgency without discounting'],
-      local: ['How do I get found locally?', 'Should I do local events?', 'Help me with Google Business Profile'],
-      email: ['Help me write a welcome email', 'How do I grow my email list?', 'What should I send my list this week?'],
-      coach: ['Review my marketing strategy', 'What should I prioritize?', 'How do I get more visibility fast?'],
-    }
-    return (
-      <div style={{ marginTop: 24 }}>
-        <div style={{ ...s.sectionTitle, marginBottom: 4 }}>Marketing Coach - Ask Anything</div>
-        <p style={s.sectionDesc}>Ask your Marketing Coach anything about brand, content, social, email, and audience growth.</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {(prompts[roomId] || []).map(p => (
-            <button key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
-          ))}
-        </div>
-        <div style={{ background: '#0c0c0c', border: `1px solid ${border}`, borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: 20, minHeight: 180, maxHeight: 320, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {msgs.map((m, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', maxWidth: '88%' }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: m.role === 'assistant' ? goldDim : '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: white, flexShrink: 0 }}>
-                  {m.role === 'assistant' ? 'MK' : (profile?.owner_name?.charAt(0) || 'U')}
-                </div>
-                <div style={{ background: m.role === 'user' ? 'rgba(212,175,55,0.1)' : '#1a1a1a', border: `1px solid ${m.role === 'user' ? goldDim : border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: m.role === 'user' ? white : whiteD, lineHeight: 1.6 }}>
-                  {m.content}
-                </div>
-              </div>
-            ))}
-            {chatLoading && (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: goldDim, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: white }}>MK</div>
-                <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-          <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
-            <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }} placeholder="Ask your Marketing Coach..." style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }} />
-            <button onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const renderRoom = () => {
     switch (activeRoom) {
       case 'brand': return (
@@ -218,7 +239,7 @@ export default function MarketingStudio() {
             <label style={s.label}>What would your ideal tagline communicate?</label>
             <textarea style={s.input} placeholder="The feeling, the transformation, the promise - let your Marketing Coach help you craft it" />
           </div>
-          <ChatPanel roomId="brand" />
+          <ChatPanel roomId="brand" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('brand'); setActiveRoom('audience') }}>Save and Continue to Audience Messaging</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('brand')}>Save Progress</button>
@@ -259,7 +280,7 @@ export default function MarketingStudio() {
             <label style={s.label}>Call to Action - what do you want them to do?</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. Click the link, DM me the word START, join the free challenge..." />
           </div>
-          <ChatPanel roomId="audience" />
+          <ChatPanel roomId="audience" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('audience'); setActiveRoom('plan') }}>Save and Continue to Marketing Plan</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('audience')}>Save Progress</button>
@@ -312,7 +333,7 @@ export default function MarketingStudio() {
             <label style={s.label}>Retention - how you keep them coming back</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. Newsletter, community, upsell offers, follow-up sequence..." />
           </div>
-          <ChatPanel roomId="plan" />
+          <ChatPanel roomId="plan" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('plan'); setActiveRoom('content') }}>Save and Continue to Content Calendar</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('plan')}>Save Progress</button>
@@ -362,7 +383,7 @@ export default function MarketingStudio() {
             <label style={s.label}>What tools will you use to schedule and post content?</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. Buffer, Later, Metricool, manually, Canva scheduler..." />
           </div>
-          <ChatPanel roomId="content" />
+          <ChatPanel roomId="content" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('content'); setActiveRoom('social') }}>Save and Continue to Social Planning</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('content')}>Save Progress</button>
@@ -409,7 +430,7 @@ export default function MarketingStudio() {
             <label style={s.label}>What is your biggest social media challenge?</label>
             <textarea style={s.input} placeholder="Consistency, ideas, engagement, growth, algorithm, time..." />
           </div>
-          <ChatPanel roomId="social" />
+          <ChatPanel roomId="social" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('social'); setActiveRoom('promos') }}>Save and Continue to Promotions</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('social')}>Save Progress</button>
@@ -452,7 +473,7 @@ export default function MarketingStudio() {
             <label style={s.label}>How will you promote it?</label>
             <textarea style={s.input} placeholder="e.g. 3 TikToks, 5 Instagram stories, 2 emails, DMs to warm leads..." />
           </div>
-          <ChatPanel roomId="promos" />
+          <ChatPanel roomId="promos" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('promos'); setActiveRoom('local') }}>Save and Continue to Local Marketing</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('promos')}>Save Progress</button>
@@ -486,7 +507,7 @@ export default function MarketingStudio() {
             <label style={s.label}>Local marketing goal for the next 90 days</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. Set up Google Business Profile, join 2 local networking groups..." />
           </div>
-          <ChatPanel roomId="local" />
+          <ChatPanel roomId="local" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('local'); setActiveRoom('email') }}>Save and Continue to Email Marketing</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('local')}>Save Progress</button>
@@ -535,7 +556,7 @@ export default function MarketingStudio() {
             <label style={s.label}>How will email connect to your offers and sales?</label>
             <textarea style={s.input} placeholder="e.g. Every email has a soft CTA, monthly offer emails, promotional sequences for launches..." />
           </div>
-          <ChatPanel roomId="email" />
+          <ChatPanel roomId="email" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('email'); setActiveRoom('coach') }}>Save and Continue to Marketing Coach</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('email')}>Save Progress</button>
@@ -562,7 +583,7 @@ export default function MarketingStudio() {
               </div>
             ))}
           </div>
-          <ChatPanel roomId="coach" />
+          <ChatPanel roomId="coach" border={border} chatEndRef={chatEndRef} chatInput={chatInput} chatLoading={chatLoading} chatMessages={chatMessages} gold={gold} goldDim={goldDim} muted={muted} profile={profile} s={s} sendChat={sendChat} setChatInput={setChatInput} user={user} white={white} whiteD={whiteD} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={{ ...s.btnPrimary, fontSize: 14, padding: '15px 32px' }} onClick={() => { ROOMS.forEach(r => saveRoom(r.id)); showToast() }}>Complete Marketing Studio</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('coach')}>Save Progress</button>
