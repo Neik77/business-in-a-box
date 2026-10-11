@@ -143,11 +143,6 @@ export default function OfficePage() {
     if (activeRoom !== "coach") { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }) }
   }, [chatMessages])
 
-  useEffect(() => {
-    if (activeRoom === 'coach' && chatInputRef.current) {
-      chatInputRef.current.focus()
-    }
-  }, [chatInput, activeRoom])
 
   // ── SAVE ROOM PROGRESS ──
   const saveRoom = async (roomId: string) => {
