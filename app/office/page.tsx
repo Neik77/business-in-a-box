@@ -86,6 +86,7 @@ export default function OfficePage() {
   const supabase = createClient()
   const chatEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<HTMLInputElement>(null)
+  const [vision, setVision] = useState({ oneLiner: '', threeYear: '', knownFor: '', serve: '', mission: '', values: '', why: '', legacy: '' })
 
   // ── LOAD USER + PROFILE ──
   useEffect(() => {
@@ -100,7 +101,10 @@ export default function OfficePage() {
       if (officeData?.completed_rooms) {
         try { setCompletedRooms(new Set(JSON.parse(officeData.completed_rooms))) } catch {}
       }
-      if (officeData?.journal_entries) {
+      if (officeData?.vision_data) {
+      try { setVision(JSON.parse(officeData.vision_data)) } catch {}
+    }
+    if (officeData?.journal_entries) {
         try { setJournalEntries(JSON.parse(officeData.journal_entries)) } catch {}
       }
       // Seed first journal entry if empty
@@ -152,6 +156,7 @@ export default function OfficePage() {
     const allDone = ROOMS.every(r => updated.has(r.id))
     // Save to ceo_office table
     await supabase.from('ceo_office').upsert({
+      vision_data: JSON.stringify(vision),
       user_id: user?.id,
       completed_rooms: JSON.stringify([...updated]),
       journal_entries: JSON.stringify(journalEntries),
@@ -218,6 +223,7 @@ export default function OfficePage() {
     setNewEntry({ title: '', category: 'Decision', what: '', why: '', outcome: '', lesson: '' })
     setShowNewEntry(false)
     await supabase.from('ceo_office').upsert({
+      vision_data: JSON.stringify(vision),
       user_id: user?.id,
       journal_entries: JSON.stringify(updated),
       updated_at: new Date().toISOString(),
@@ -332,26 +338,26 @@ export default function OfficePage() {
             <div style={s.sectionTitle}>🌟 The Big Picture</div>
             <p style={s.sectionDesc}>Answer these to build the foundation of your vision.</p>
             <label style={s.label}>What does {profile?.business_name} look like in 3 years?</label>
-            <textarea style={s.input} placeholder="Revenue, team, audience, impact, what changed..." />
+            <textarea style={s.input} value={vision.threeYear} onChange={e => setVision({...vision, threeYear: e.target.value})} placeholder="Revenue, team, audience, impact, what changed..." />
             <label style={s.label}>What do you want to be known for?</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. The woman who made AI simple for creative business owners" />
             <label style={s.label}>Who do you want to serve at your highest level?</label>
-            <textarea style={s.input} placeholder="Describe your ideal client at the peak of your business..." />
+            <textarea style={s.input} value={vision.serve} onChange={e => setVision({...vision, serve: e.target.value})} placeholder="Describe your ideal client at the peak of your business..." />
           </div>
           <div style={s.section}>
             <div style={s.sectionTitle}>💡 Mission Statement</div>
             <p style={s.sectionDesc}>What you do and who you do it for — one clear sentence.</p>
             <label style={s.label}>I help _____ do _____ so they can _____</label>
-            <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. I help Canva users use AI tools so they can build digital products without the overwhelm" />
+            <input type="text" style={{ ...s.input, resize: undefined }} value={vision.mission} onChange={e => setVision({...vision, mission: e.target.value})} placeholder="e.g. I help Canva users use AI tools so they can build digital products without the overwhelm" />
             <label style={s.label}>Values that drive {profile?.business_name}</label>
-            <textarea style={s.input} placeholder="e.g. Simplicity, accessibility, real results, community..." />
+            <textarea style={s.input} value={vision.values} onChange={e => setVision({...vision, values: e.target.value})} placeholder="e.g. Simplicity, accessibility, real results, community..." />
           </div>
           <div style={s.section}>
             <div style={s.sectionTitle}>🔥 Your Why</div>
             <label style={s.label}>Why did you start {profile?.business_name}?</label>
-            <textarea style={s.input} placeholder="Be honest. The real reason — not the polished version." />
+            <textarea style={s.input} value={vision.why} onChange={e => setVision({...vision, why: e.target.value})} placeholder="Be honest. The real reason — not the polished version." />
             <label style={s.label}>Who are you building this for beyond yourself?</label>
-            <textarea style={s.input} placeholder="Family, community, future clients, a version of yourself from the past..." />
+            <textarea style={s.input} value={vision.legacy} onChange={e => setVision({...vision, legacy: e.target.value})} placeholder="Family, community, future clients, a version of yourself from the past..." />
           </div>
           <ChatPanel roomId="vision" />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
