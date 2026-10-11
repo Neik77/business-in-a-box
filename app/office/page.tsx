@@ -302,7 +302,7 @@ export default function OfficePage() {
           </div>
           <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
             <input
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
+              onChange={e => { chatInputRef.current.value = e.target.value }} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
               placeholder="Ask your CEO Coach..." autoComplete="off" ref={chatInputRef} onFocus={() => setChatFocused(true)} onBlur={() => setChatFocused(false)}
               style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }}
             />
