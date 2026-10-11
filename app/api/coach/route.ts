@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
   try {
-    const { context } = await req.json()
+    const { system, messages } = await req.json()
     
     const apiKey = process.env.ANTHROPIC_API_KEY
     
@@ -20,7 +20,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
-        messages: [{ role: 'user', content: context }]
+        system: system,
+          messages: messages.filter((m: any) => m && m.content && String(m.content).trim() !== '')
       })
     })
     
