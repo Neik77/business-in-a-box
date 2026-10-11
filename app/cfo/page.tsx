@@ -6,6 +6,77 @@ import { useRouter } from 'next/navigation'
 
 type ChatMessage = { role: 'assistant' | 'user'; content: string }
 
+// -- CFO CHAT PANEL (module scope - do not nest inside page component) --
+function ChatPanel({ roomId, chatInput, setChatInput, chatMessages, chatLoading, sendChat, chatEndRef, profile, goldDim, border, whiteD, muted, gold, s, white, user }: {
+  roomId: string
+  chatInput: string
+  setChatInput: (v: string) => void
+  chatMessages: Record<string, { role: 'assistant' | 'user'; content: string }[]>
+  chatLoading: boolean
+  sendChat: (roomId: string, msg?: string) => void
+  chatEndRef: { current: HTMLDivElement | null }
+  profile: any
+  goldDim: string
+  border: string
+  whiteD: string
+  muted: string
+  gold: string
+  s: any
+  white: string
+  user: any
+}) {
+
+    const msgs = chatMessages[roomId] || []
+    const prompts: Record<string, string[]> = {
+      income: ['What income streams should I add?', 'How do I track income properly?', 'What should my monthly revenue goal be?'],
+      expenses: ['What expenses can I cut?', 'How do I separate personal and business expenses?', 'What are normal business expenses?'],
+      pricing: ['Am I charging enough?', 'How do I raise my prices?', 'What pricing model works best?'],
+      budget: ['Help me build a monthly budget', 'What should I budget for marketing?', 'How much should I pay myself?'],
+      profit: ['What is a good profit margin?', 'How do I increase my profit?', 'Why am I not keeping enough money?'],
+      cashflow: ['How do I fix a cash flow problem?', 'How do I build a cash reserve?', 'When should I expect slow months?'],
+      breakeven: ['Calculate my break-even point', 'How many sales do I need to break even?', 'What happens after I break even?'],
+      goals: ['Set my financial goals', 'How do I hit $10K months?', 'What financial milestones should I aim for?'],
+      coach: ['Review my money situation', 'What should I focus on financially?', 'How do I become more profitable?'],
+    }
+    return (
+      <div style={{ marginTop: 24 }}>
+        <div style={{ ...s.sectionTitle, marginBottom: 4 }}>CFO Coach - Ask Anything About Money</div>
+        <p style={s.sectionDesc}>Ask your CFO Coach anything about money, pricing, profit, and financial strategy.</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+          {(prompts[roomId] || []).map(p => (
+            <button key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
+          ))}
+        </div>
+        <div style={{ background: '#0c0c0c', border: `1px solid ${border}`, borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ padding: 20, minHeight: 180, maxHeight: 320, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {msgs.map((m, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', maxWidth: '88%' }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: m.role === 'assistant' ? goldDim : '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: white, flexShrink: 0 }}>
+                  {m.role === 'assistant' ? 'CF' : (profile?.owner_name?.charAt(0) || 'U')}
+                </div>
+                <div style={{ background: m.role === 'user' ? 'rgba(212,175,55,0.1)' : '#1a1a1a', border: `1px solid ${m.role === 'user' ? goldDim : border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: m.role === 'user' ? white : whiteD, lineHeight: 1.6 }}>
+                  {m.content}
+                </div>
+              </div>
+            ))}
+            {chatLoading && (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', background: goldDim, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: white }}>CF</div>
+                <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
+          <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
+            <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }} placeholder="Ask your CFO Coach..." style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }} />
+            <button onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
+          </div>
+        </div>
+      </div>
+    )
+  
+}
+
 export default function CFOMoneyRoom() {
   const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
@@ -131,57 +202,6 @@ export default function CFOMoneyRoom() {
 
   const progressPct = Math.round((completedRooms.size / 9) * 100)
 
-  const ChatPanel = ({ roomId }: { roomId: string }) => {
-    const msgs = chatMessages[roomId] || []
-    const prompts: Record<string, string[]> = {
-      income: ['What income streams should I add?', 'How do I track income properly?', 'What should my monthly revenue goal be?'],
-      expenses: ['What expenses can I cut?', 'How do I separate personal and business expenses?', 'What are normal business expenses?'],
-      pricing: ['Am I charging enough?', 'How do I raise my prices?', 'What pricing model works best?'],
-      budget: ['Help me build a monthly budget', 'What should I budget for marketing?', 'How much should I pay myself?'],
-      profit: ['What is a good profit margin?', 'How do I increase my profit?', 'Why am I not keeping enough money?'],
-      cashflow: ['How do I fix a cash flow problem?', 'How do I build a cash reserve?', 'When should I expect slow months?'],
-      breakeven: ['Calculate my break-even point', 'How many sales do I need to break even?', 'What happens after I break even?'],
-      goals: ['Set my financial goals', 'How do I hit $10K months?', 'What financial milestones should I aim for?'],
-      coach: ['Review my money situation', 'What should I focus on financially?', 'How do I become more profitable?'],
-    }
-    return (
-      <div style={{ marginTop: 24 }}>
-        <div style={{ ...s.sectionTitle, marginBottom: 4 }}>CFO Coach - Ask Anything About Money</div>
-        <p style={s.sectionDesc}>Ask your CFO Coach anything about money, pricing, profit, and financial strategy.</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {(prompts[roomId] || []).map(p => (
-            <button key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
-          ))}
-        </div>
-        <div style={{ background: '#0c0c0c', border: `1px solid ${border}`, borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: 20, minHeight: 180, maxHeight: 320, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {msgs.map((m, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', maxWidth: '88%' }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: m.role === 'assistant' ? goldDim : '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: white, flexShrink: 0 }}>
-                  {m.role === 'assistant' ? 'CF' : (profile?.owner_name?.charAt(0) || 'U')}
-                </div>
-                <div style={{ background: m.role === 'user' ? 'rgba(212,175,55,0.1)' : '#1a1a1a', border: `1px solid ${m.role === 'user' ? goldDim : border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: m.role === 'user' ? white : whiteD, lineHeight: 1.6 }}>
-                  {m.content}
-                </div>
-              </div>
-            ))}
-            {chatLoading && (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: goldDim, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: white }}>CF</div>
-                <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-          <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
-            <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }} placeholder="Ask your CFO Coach..." style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }} />
-            <button onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const renderRoom = () => {
     switch (activeRoom) {
       case 'income': return (
@@ -225,7 +245,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>What can you turn into recurring income?</label>
             <textarea style={s.input} placeholder="memberships, retainers, subscriptions, monthly templates..." />
           </div>
-          <ChatPanel roomId="income" />
+          <ChatPanel roomId="income" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('income'); setActiveRoom('expenses') }}>Save and Continue to Expense Tracking</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('income')}>Save Progress</button>
@@ -274,7 +294,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>Total estimated monthly expenses</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="$0/month total" />
           </div>
-          <ChatPanel roomId="expenses" />
+          <ChatPanel roomId="expenses" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('expenses'); setActiveRoom('pricing') }}>Save and Continue to Pricing</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('expenses')}>Save Progress</button>
@@ -322,7 +342,7 @@ export default function CFOMoneyRoom() {
               </div>
             ))}
           </div>
-          <ChatPanel roomId="pricing" />
+          <ChatPanel roomId="pricing" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('pricing'); setActiveRoom('budget') }}>Save and Continue to Budget</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('pricing')}>Save Progress</button>
@@ -363,7 +383,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>What system will you use to track your budget?</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. Spreadsheet, QuickBooks, Wave, simple notebook, weekly check-in..." />
           </div>
-          <ChatPanel roomId="budget" />
+          <ChatPanel roomId="budget" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('budget'); setActiveRoom('profit') }}>Save and Continue to Profit Planning</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('budget')}>Save Progress</button>
@@ -396,7 +416,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>3 ways you can increase revenue to grow profit</label>
             <textarea style={s.input} placeholder="1. Add a high-ticket offer&#10;2. Launch a recurring membership&#10;3. Increase content to grow audience..." />
           </div>
-          <ChatPanel roomId="profit" />
+          <ChatPanel roomId="profit" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('profit'); setActiveRoom('cashflow') }}>Save and Continue to Cash Flow</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('profit')}>Save Progress</button>
@@ -426,7 +446,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>What is your plan to build a 3-month cash reserve?</label>
             <textarea style={s.input} placeholder="e.g. Save 10% of every payment, cut X expense, add a low-cost offer..." />
           </div>
-          <ChatPanel roomId="cashflow" />
+          <ChatPanel roomId="cashflow" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('cashflow'); setActiveRoom('breakeven') }}>Save and Continue to Break-Even</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('cashflow')}>Save Progress</button>
@@ -458,7 +478,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>What does that number tell you about your pricing or offer?</label>
             <textarea style={s.input} placeholder="Does your price need to go up? Do you need a higher-ticket offer? More volume?" />
           </div>
-          <ChatPanel roomId="breakeven" />
+          <ChatPanel roomId="breakeven" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('breakeven'); setActiveRoom('goals') }}>Save and Continue to Financial Goals</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('breakeven')}>Save Progress</button>
@@ -493,7 +513,7 @@ export default function CFOMoneyRoom() {
             <label style={s.label}>What will hitting these numbers make possible?</label>
             <textarea style={s.input} placeholder="Pay off debt, hire help, move, stop working a job, travel, build wealth..." />
           </div>
-          <ChatPanel roomId="goals" />
+          <ChatPanel roomId="goals" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('goals'); setActiveRoom('coach') }}>Save and Continue to CFO Coach</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('goals')}>Save Progress</button>
@@ -520,7 +540,7 @@ export default function CFOMoneyRoom() {
               </div>
             ))}
           </div>
-          <ChatPanel roomId="coach" />
+          <ChatPanel roomId="coach" chatInput={chatInput} setChatInput={setChatInput} chatMessages={chatMessages} chatLoading={chatLoading} sendChat={sendChat} chatEndRef={chatEndRef} profile={profile} goldDim={goldDim} border={border} whiteD={whiteD} muted={muted} gold={gold} s={s} white={white} user={user} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={{ ...s.btnPrimary, fontSize: 14, padding: '15px 32px' }} onClick={() => { ROOMS.forEach(r => saveRoom(r.id)); showToast() }}>Complete CFO Money Room</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('coach')}>Save Progress</button>
