@@ -63,8 +63,8 @@ export default function Dashboard() {
     { title:'Sales Room', desc:'Leads, scripts, and revenue tracking.', path:'/sales', key:'sales', v:'V4', unlocked: true },
     { title:'Operations Center', desc:'SOPs, workflows, and client systems.', path:'/operations', key:'operations', v:'V5', unlocked: true },
     { title:'Legal & Setup Room', desc:'LLC, EIN, contracts, and compliance.', path:'/legal', key:'legal', v:'V6', unlocked: true },
-    { title:'Funding Department', desc:'Business credit, loans, and grants.', path:'/locked', key:'funding', v:'V7', unlocked: false },
-    { title:'AI Innovation Lab', desc:'Prompts, workflows, and AI systems.', path:'/locked', key:'ai_lab', v:'V8', unlocked: false },
+    { title:'Funding Department', desc:'Business credit, loans, and grants.', path:'/funding', key:'funding', v:'V7', unlocked: false },
+    { title:'AI Innovation Lab', desc:'Prompts, workflows, and AI systems.', path:'/ai-lab', key:'ai_lab', v:'V8', unlocked: false },
   ]
 
   const allBadges = [
