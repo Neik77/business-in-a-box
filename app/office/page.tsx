@@ -135,7 +135,7 @@ export default function OfficePage() {
   }, [])
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (activeRoom !== "coach") { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }) }
   }, [chatMessages])
 
   useEffect(() => {
