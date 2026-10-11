@@ -84,7 +84,6 @@ export default function OfficePage() {
   const [savedToast, setSavedToast] = useState(false)
   const router = useRouter()
   const supabase = createClient()
-  const chatEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<HTMLInputElement>(null)
   const [chatFocused, setChatFocused] = useState(false)
   const [vision, setVision] = useState({ oneLiner: '', threeYear: '', knownFor: '', serve: '', mission: '', values: '', why: '', legacy: '' })
@@ -140,7 +139,6 @@ export default function OfficePage() {
   }, [])
 
   useEffect(() => {
-    if (activeRoom !== "coach") { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }) }
   }, [chatMessages])
 
 
@@ -298,7 +296,6 @@ export default function OfficePage() {
                 <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
               </div>
             )}
-            <div ref={chatEndRef} />
           </div>
           <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
             <input
