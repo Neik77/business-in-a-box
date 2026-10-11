@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 type ChatMessage = { role: 'assistant' | 'user'; content: string }
 
 // -- MARKETING CHAT PANEL (module scope - do not nest inside page component) --
-function ChatPanel({ roomId, border, chatEndRef, chatInput, chatLoading, chatMessages, gold, goldDim, muted, profile, roomId, s, sendChat, setChatInput, user, white, whiteD }: {
+function ChatPanel({ roomId, border, chatEndRef, chatInput, chatLoading, chatMessages, gold, goldDim, muted, profile, s, sendChat, setChatInput, user, white, whiteD }: {
   roomId: string
   border: string
   chatEndRef: { current: HTMLDivElement | null }
@@ -18,7 +18,6 @@ function ChatPanel({ roomId, border, chatEndRef, chatInput, chatLoading, chatMes
   goldDim: string
   muted: string
   profile: any
-  roomId: string
   s: any
   sendChat: (roomId: string, msg?: string) => void
   setChatInput: (v: string) => void
