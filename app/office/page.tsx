@@ -177,7 +177,7 @@ export default function OfficePage() {
   const sendChat = async (roomId: string, messageOverride?: string) => {
     const message = messageOverride || chatInputValueRef.current.trim()
     if (!message || !profile) return
-    setChatInput('')
+    if (chatInputRef.current) chatInputRef.current.value = ''
     chatInputValueRef.current = ''
     if (chatInputRef.current) chatInputRef.current.value = ''
     const userMsg: ChatMessage = { role: 'user', content: message }
