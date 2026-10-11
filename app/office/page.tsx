@@ -67,6 +67,89 @@ Be direct, strategic, and specific to their business. No fluff. No generic advic
   return roomContext[roomId] || base
 }
 
+
+// ── CHAT PANEL COMPONENT (module scope - must not be inside page component) ──
+type ChatPanelProps = {
+  roomId: string
+  chatInput: string
+  setChatInput: (v: string) => void
+  sendChat: (roomId: string, msg?: string) => void
+  chatInputRef: { current: HTMLInputElement | null }
+  chatFocused: boolean
+  setChatFocused: (v: boolean) => void
+  chatMessages: Record<string, { role: string; content: string }[]>
+  chatLoading: boolean
+  profile: any
+  border: string
+  whiteD: string
+  gold: string
+  goldDim: string
+  muted: string
+}
+
+function ChatPanel({ roomId, chatInput, setChatInput, sendChat, chatInputRef, chatFocused, setChatFocused, chatMessages, chatLoading, profile, border, whiteD, gold, goldDim, muted }: ChatPanelProps) {
+  const prompts: Record<string, string[]> = {
+    vision: ['Write my vision statement', 'What should my 3-year picture look like?', 'Help me define my mission', 'What is my WHY?'],
+    icp: ['Who is my ideal customer?', 'What pain points should I focus on?', 'Write my customer avatar', 'What language does my customer use?'],
+    offers: ['Help me pick my hero offer', 'How should I price this?', 'What offers should I retire?', 'Build my offer suite'],
+    goals: ['Set my revenue goal', 'What should my 90-day number be?', 'Help me set a growth goal', 'What systems do I need?'],
+    plan: ['Break my goal into 3 phases', 'What do I do in month one?', 'What could block me?', 'Build my weekly action plan'],
+    journal: ['Help me process this decision', 'What did I learn this week?', 'Document a business win', 'I need to think through a pivot'],
+    coach: ['What should I focus on first?', 'Help me simplify my offers', 'I feel overwhelmed - what do I do?', 'How do I get my first 10 buyers?'],
+  }
+  const msgs = chatMessages[roomId] || []
+  const chatEndRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [msgs.length])
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      <div style={{ fontFamily: 'Georgia,serif', fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>🤖 Your AI Coach - Ask Anything</div>
+      <p style={{ fontSize: 13, color: muted, marginBottom: 20, lineHeight: 1.6 }}>Your coach knows your business. Ask for guidance, get direct answers.</p>
+      <div style={{ display: chatFocused ? 'none' : 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        {(prompts[roomId] || []).map(p => (
+          <button type="button" tabIndex={-1} key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
+        ))}
+      </div>
+      <div style={{ background: '#0c0c0c', border: `1px solid ${border}`, borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ padding: 20, minHeight: 200, maxHeight: 360, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {msgs.map((m, i) => (
+            <div key={i} style={{ display: 'flex', gap: 10, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', maxWidth: '88%' }}>
+              <div style={{ width: 30, height: 30, borderRadius: '50%', background: m.role === 'assistant' ? goldDim : '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, flexShrink: 0 }}>
+                {m.role === 'assistant' ? '👑' : (profile?.owner_name?.charAt(0) || 'U')}
+              </div>
+              <div style={{ background: m.role === 'user' ? 'rgba(212,175,55,0.1)' : '#1a1a1a', border: `1px solid ${m.role === 'user' ? goldDim : border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: m.role === 'user' ? '#fff' : whiteD, lineHeight: 1.6 }}>
+                {m.content}
+              </div>
+            </div>
+          ))}
+          {chatLoading && (
+            <div style={{ display: 'flex', gap: 10, maxWidth: '88%' }}>
+              <div style={{ width: 30, height: 30, borderRadius: '50%', background: goldDim, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>👑</div>
+              <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
+            </div>
+          )}
+          <div ref={chatEndRef} />
+        </div>
+        <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
+          <input
+            value={chatInput}
+            onChange={e => setChatInput(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
+            placeholder="Ask your CEO Coach..." autoComplete="off"
+            ref={chatInputRef}
+            onFocus={() => setChatFocused(true)} onBlur={() => setChatFocused(false)}
+            style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: '#fff', fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }}
+          />
+          <button type="button" onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function OfficePage() {
   const [user, setUser] = useState<any>(null)
@@ -257,59 +340,6 @@ export default function OfficePage() {
 
   const progressPct = Math.round((completedRooms.size / 7) * 100)
 
-  // ── CHAT PANEL (shared across rooms) ──
-  const ChatPanel = ({ roomId }: { roomId: string }) => {
-    const msgs = chatMessages[roomId] || []
-    const prompts: Record<string, string[]> = {
-      vision: ['Write my vision statement', 'What should my 3-year picture look like?', 'Help me define my mission', 'What is my WHY?'],
-      icp: ['Who is my ideal customer?', 'What pain points should I focus on?', 'Write my customer avatar', 'What language does my customer use?'],
-      offers: ['Help me pick my hero offer', 'How should I price this?', 'What offers should I retire?', 'Build my offer suite'],
-      goals: ['Set my revenue goal', 'What should my 90-day number be?', 'Help me set a growth goal', 'What systems do I need?'],
-      plan: ['Break my goal into 3 phases', 'What do I do in month one?', 'What could block me?', 'Build my weekly action plan'],
-      journal: ['Help me process this decision', 'What did I learn this week?', 'Document a business win', 'I need to think through a pivot'],
-      coach: ['What should I focus on first?', 'Help me simplify my offers', 'I feel overwhelmed — what do I do?', 'How do I get my first 10 buyers?'],
-    }
-    return (
-      <div style={{ marginTop: 24 }}>
-        <div style={{ ...s.sectionTitle, marginBottom: 4 }}>🤖 Your AI Coach — Ask Anything</div>
-        <p style={s.sectionDesc}>Your coach knows your business. Ask for guidance, get direct answers.</p>
-        <div style={{ display: chatFocused ? 'none' : 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-          {(prompts[roomId] || []).map(p => (
-            <button type="button" tabIndex={-1} key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
-          ))}
-        </div>
-        <div style={{ background: '#0c0c0c', border: `1px solid ${border}`, borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: 20, minHeight: 200, maxHeight: 360, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {msgs.map((m, i) => (
-              <div key={i} style={{ display: 'flex', gap: 10, alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', flexDirection: m.role === 'user' ? 'row-reverse' : 'row', maxWidth: '88%' }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: m.role === 'assistant' ? goldDim : '#222', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, flexShrink: 0 }}>
-                  {m.role === 'assistant' ? '👑' : (profile?.owner_name?.charAt(0) || 'U')}
-                </div>
-                <div style={{ background: m.role === 'user' ? 'rgba(212,175,55,0.1)' : '#1a1a1a', border: `1px solid ${m.role === 'user' ? goldDim : border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: m.role === 'user' ? white : whiteD, lineHeight: 1.6 }}>
-                  {m.content}
-                </div>
-              </div>
-            ))}
-            {chatLoading && (
-              <div style={{ display: 'flex', gap: 10, maxWidth: '88%' }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', background: goldDim, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>👑</div>
-                <div style={{ background: '#1a1a1a', border: `1px solid ${border}`, borderRadius: 14, padding: '10px 14px', fontSize: 13, color: muted }}>Thinking...</div>
-              </div>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: 10, padding: 14, borderTop: `1px solid ${border}`, background: '#0e0e0e' }}>
-            <input
-              onChange={e => { chatInputRef.current.value = e.target.value }} onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
-              placeholder="Ask your CEO Coach..." autoComplete="off" ref={chatInputRef} onFocus={() => setChatFocused(true)} onBlur={() => setChatFocused(false)}
-              style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }}
-            />
-            <button type="button" onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   // ── ROOM RENDERER ──
   const renderRoom = () => {
     switch (activeRoom) {
@@ -351,7 +381,7 @@ export default function OfficePage() {
             <label style={s.label}>Who are you building this for beyond yourself?</label>
             <textarea style={s.input} value={vision.legacy} onChange={e => setVision({...vision, legacy: e.target.value})} placeholder="Family, community, future clients, a version of yourself from the past..." />
           </div>
-          <ChatPanel roomId="vision" />
+          <ChatPanel roomId="vision" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('vision'); setActiveRoom('icp') }}>Save & Continue to Ideal Customer →</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('vision')}>Save Progress</button>
@@ -411,7 +441,7 @@ export default function OfficePage() {
             <label style={s.label}>What would make them say YES immediately?</label>
             <textarea style={s.input} placeholder="A clear promise, a fast result, a specific price point, someone who gets them..." />
           </div>
-          <ChatPanel roomId="icp" />
+          <ChatPanel roomId="icp" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('icp'); setActiveRoom('offers') }}>Save & Continue to Offer Builder →</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('icp')}>Save Progress</button>
@@ -469,7 +499,7 @@ export default function OfficePage() {
             <label style={s.label}>Why are you keeping these off the table for now?</label>
             <textarea style={s.input} placeholder="e.g. Too much time, not my zone of genius, not aligned with ideal client..." />
           </div>
-          <ChatPanel roomId="offers" />
+          <ChatPanel roomId="offers" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('offers'); setActiveRoom('goals') }}>Save & Continue to Business Goals →</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('offers')}>Save Progress</button>
@@ -517,7 +547,7 @@ export default function OfficePage() {
             <label style={s.label}>1 thing you're saying NO to this quarter</label>
             <input type="text" style={{ ...s.input, resize: undefined }} placeholder="e.g. Starting new offers before finishing current ones..." />
           </div>
-          <ChatPanel roomId="goals" />
+          <ChatPanel roomId="goals" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('goals'); setActiveRoom('plan') }}>Save & Continue to 90-Day Plan →</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('goals')}>Save Progress</button>
@@ -572,7 +602,7 @@ export default function OfficePage() {
             <label style={s.label}>How will you handle them?</label>
             <textarea style={s.input} placeholder="Your plan for when things get hard..." />
           </div>
-          <ChatPanel roomId="plan" />
+          <ChatPanel roomId="plan" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('plan'); setActiveRoom('journal') }}>Save & Continue to CEO Journal →</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('plan')}>Save Progress</button>
@@ -625,7 +655,7 @@ export default function OfficePage() {
               </div>
             ))}
           </div>
-          <ChatPanel roomId="journal" />
+          <ChatPanel roomId="journal" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={s.btnPrimary} onClick={() => { saveRoom('journal'); setActiveRoom('coach') }}>Continue to AI CEO Coach →</button>
             <button style={s.btnSecondary} onClick={() => saveRoom('journal')}>Save Progress</button>
@@ -682,7 +712,7 @@ export default function OfficePage() {
               ))}
             </div>
           )}
-          <ChatPanel roomId="coach" />
+          <ChatPanel roomId="coach" chatInput={chatInput} setChatInput={setChatInput} sendChat={sendChat} chatInputRef={chatInputRef} chatFocused={chatFocused} setChatFocused={setChatFocused} chatMessages={chatMessages} chatLoading={chatLoading} profile={profile} border={border} whiteD={whiteD} gold={gold} goldDim={goldDim} muted={muted} />
           <div style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
             <button style={{ ...s.btnPrimary, fontSize: 14, padding: '15px 32px' }} onClick={() => {
               ROOMS.forEach(r => saveRoom(r.id))
