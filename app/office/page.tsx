@@ -86,6 +86,7 @@ export default function OfficePage() {
   const supabase = createClient()
   const chatEndRef = useRef<HTMLDivElement>(null)
   const chatInputRef = useRef<HTMLInputElement>(null)
+  const [chatFocused, setChatFocused] = useState(false)
   const [vision, setVision] = useState({ oneLiner: '', threeYear: '', knownFor: '', serve: '', mission: '', values: '', why: '', legacy: '' })
 
   // ── LOAD USER + PROFILE ──
@@ -278,7 +279,7 @@ export default function OfficePage() {
       <div style={{ marginTop: 24 }}>
         <div style={{ ...s.sectionTitle, marginBottom: 4 }}>🤖 Your AI Coach — Ask Anything</div>
         <p style={s.sectionDesc}>Your coach knows your business. Ask for guidance, get direct answers.</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <div style={{ display: chatFocused ? 'none' : 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
           {(prompts[roomId] || []).map(p => (
             <button type="button" tabIndex={-1} key={p} onClick={() => sendChat(roomId, p)} style={{ background: 'rgba(212,175,55,0.05)', border: `1px solid ${border}`, borderRadius: 20, color: whiteD, fontSize: 12, padding: '6px 14px', cursor: 'pointer' }}>{p}</button>
           ))}
@@ -308,7 +309,7 @@ export default function OfficePage() {
               value={chatInput}
               onChange={e => setChatInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(roomId) } }}
-              placeholder="Ask your CEO Coach..." autoComplete="off" ref={chatInputRef}
+              placeholder="Ask your CEO Coach..." autoComplete="off" ref={chatInputRef} onFocus={() => setChatFocused(true)} onBlur={() => setChatFocused(false)}
               style={{ flex: 1, background: '#111', border: `1px solid ${border}`, borderRadius: 30, color: white, fontFamily: 'DM Sans,sans-serif', fontSize: 13, padding: '10px 18px', outline: 'none' }}
             />
             <button type="button" onClick={() => sendChat(roomId)} style={{ background: `linear-gradient(135deg,${goldDim},${gold})`, color: '#000', fontWeight: 800, fontSize: 12, padding: '10px 20px', borderRadius: 30, border: 'none', cursor: 'pointer' }}>Send</button>
