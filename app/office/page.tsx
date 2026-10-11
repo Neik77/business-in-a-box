@@ -135,7 +135,7 @@ export default function OfficePage() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chatMessages, activeRoom])
+  }, [chatMessages])
 
   // ── SAVE ROOM PROGRESS ──
   const saveRoom = async (roomId: string) => {
