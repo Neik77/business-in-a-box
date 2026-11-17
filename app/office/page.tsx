@@ -256,10 +256,9 @@ export default function OfficePage() {
 
   // ── AI COACH CHAT ──
   const sendChat = async (roomId: string, messageOverride?: string) => {
-    const message = messageOverride || chatInputRef.current?.value?.trim() || ""
+    const message = (messageOverride || chatInput).trim()
     if (!message || !profile) return
-    if (chatInputRef.current) chatInputRef.current.value = ''
-    if (chatInputRef.current) chatInputRef.current.value = ''
+    setChatInput('')
     const userMsg: ChatMessage = { role: 'user', content: message }
     setChatMessages(prev => ({ ...prev, [roomId]: [...(prev[roomId] || []), userMsg] }))
     setChatLoading(true)
