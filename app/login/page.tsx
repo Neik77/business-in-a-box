@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -10,12 +11,55 @@ export default function LoginPage() {
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
+  const router = useRouter()
+
+  // ATTEMPT GUARD (Muse amendment 2).
+  // Every password attempt claims the next token. Only the attempt whose token
+  // is still the current one may touch state or navigate. A late success, a
+  // late error, or a late timeout belonging to a superseded attempt is
+  // discarded: it cannot reset loading, cannot navigate, and cannot show an
+  // error that belongs to an older attempt. Promise.race on its own would not
+  // prevent this, because it cannot cancel the underlying Supabase request.
+  const attemptRef = useRef(0)
+  const SIGN_IN_TIMEOUT_MS = 15000
 
   const login = async () => {
+    const attemptId = ++attemptRef.current
+    const isCurrentAttempt = () => attemptRef.current === attemptId
+
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setError(error.message); setLoading(false) }
+
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+
+    try {
+      const outcome = await Promise.race([
+        supabase.auth.signInWithPassword({ email, password }),
+        new Promise<{ __timeout: true }>(resolve => {
+          timeoutId = setTimeout(() => resolve({ __timeout: true }), SIGN_IN_TIMEOUT_MS)
+        })
+      ])
+
+      if (!isCurrentAttempt()) return
+
+      if ('__timeout' in outcome) {
+        setError('Sign-in is taking longer than expected. Please check your connection and try again.')
+        return
+      }
+
+      if (outcome.error) {
+        setError(outcome.error.message)
+        return
+      }
+
+      router.replace('/dashboard')
+    } catch {
+      if (!isCurrentAttempt()) return
+      setError('We could not sign you in. Please check your connection and try again.')
+    } finally {
+      if (timeoutId !== undefined) clearTimeout(timeoutId)
+      if (isCurrentAttempt()) setLoading(false)
+    }
   }
 
   const sendMagicLink = async () => {
